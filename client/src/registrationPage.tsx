@@ -1,10 +1,17 @@
 import React, { useState, FormEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const Register = () => {
     const [email, setEmail] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [password, setPassword] = useState('');
+
+    const navigate = useNavigate();
+
+    const handleSwap = () => {
+        navigate('/');
+    }
 
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -29,7 +36,7 @@ const Register = () => {
                 <div className="flex flex-col w-full">
                     <button>Register</button>
                     <div className="flex justify-center">Or already have an account?</div>
-                    <button>Login</button>
+                    <button onClick={handleSwap}>Login</button>
                 </div>
             </form>
         </div>

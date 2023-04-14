@@ -1,13 +1,20 @@
 import React, { useState, FormEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
+    const navigate = useNavigate();
+
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         console.log(email);
+    }
+
+    const handleSwap = () => {
+        navigate('/Register');
     }
 
     return (
@@ -24,7 +31,7 @@ const Login = () => {
 
                 <div className="flex justify-around w-full">
                     <button>Login</button>
-                    <button>Register</button>
+                    <button onClick={handleSwap}>Register</button>
                 </div>
                 <span className="w-full text-right mr-2">Forgot your password?</span>
 

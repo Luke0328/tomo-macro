@@ -7,14 +7,14 @@ import Register from "./registrationPage"
 import Home from "./homePage"
 
 function App() {
-  const [page, setPage] = useState('Login');
+  // const [page, setPage] = useState('Login');
 
   return (
     <div className="App">
       {/* <Login/> */}
       <Routes>
-        <Route path="/" element={<Home />}></Route>
-        <Route path="Login" element={<Login />}></Route>
+        <Route path="Home" element={<Home />}></Route>
+        <Route path="/" element={<Login />}></Route>
         <Route path="Register" element={<Register />}></Route>
       </Routes>
     </div>
