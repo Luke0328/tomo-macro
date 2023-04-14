@@ -8,27 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const { MongoClient } = require("mongodb");
-const Db = process.env.ATLAS_URI;
-const client = new MongoClient(Db, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
-var _db;
+Object.defineProperty(exports, "__esModule", { value: true });
+const mongoose_1 = require("mongoose");
+const db_uri = process.env.ATLAS_URI;
 module.exports = {
     run: function () {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                // Connect the client to the server (optional starting in v4.7)
-                yield client.connect();
-                // Send a ping to confirm a successful connection
-                yield client.db("admin").command({ ping: 1 });
-                console.log("Pinged your deployment. You successfully connected to MongoDB!");
-            }
-            finally {
-                // Ensures that the client will close when you finish/error
-                yield client.close();
-            }
+            yield (0, mongoose_1.connect)(`${db_uri}`)
+                .then(() => console.log("Connected to db"));
         });
     }
 };
