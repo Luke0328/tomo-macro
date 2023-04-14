@@ -18,9 +18,10 @@ const Login = () => {
                     <button>Login</button>
                     <button>Register</button>
                 </div>
+                <span className="w-full text-right mr-2">Forgot your password?</span>
 
                 <div className="flex flex-col align-center w-4/5 h-1/5">
-                    <div>Or</div>
+                    <div className="flex justify-center">Or</div>
                     <button>Sign up with Google</button>
                 </div>
             </form>
