@@ -1,50 +1,15 @@
 import { Schema, model } from "mongoose";
+import { IRecipe, recipeSchema } from "./Recipe";
+import { IDateData, dateDataSchema } from "./DateData";
 
-const recipeSchema = new Schema({
-    name: {
-        type: String,
-        required: true,
-    },
-    cals: {
-        type: Number,
-        default: 0,
-    },
-    protein: {
-        type: Number,
-        default: 0,
-    },
-    carbs: {
-        type: Number,
-        default: 0,
-    },
-    fat: {
-        type: Number,
-        default: 0,
-    },
-});
+interface IUser {
+    email: string,
+    pwd: string,
+    recipes: Array<IRecipe>,
+    dataByDate: Array<IDateData>,
+}
 
-const dateDataSchema = new Schema({
-    date: Date,
-    meals: [recipeSchema],
-    total_cals: {
-        type: Number,
-        default: 0,
-    },
-    total_protein: {
-        type: Number,
-        default: 0,
-    },
-    total_carbs: {
-        type: Number,
-        default: 0,
-    },
-    total_fat: {
-        type: Number,
-        default: 0,
-    },
-});
-
-const userSchema = new Schema({
+const userSchema = new Schema<IUser>({
     email: {
         type: String,
         required: true,
@@ -62,4 +27,6 @@ const userSchema = new Schema({
     },
 });
 
-const User = model("user", userSchema);
+// TO DO: Recipe decorator -> references the original recipe but has modifications
+
+export const User = model("user", userSchema);
