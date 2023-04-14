@@ -1,11 +1,13 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import Login  from "./loginPage"
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
+      <Login/>
+      {/* <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
           Edit <code>src/App.tsx</code> and save to reload. TEST!
@@ -18,8 +20,8 @@ function App() {
         >
           Learn React
         </a>
-        <span className='text-3xl'>blah</span>
-      </header>
+        <span className='text-3xl'>!!!!!pojasdfpojasdf!!!!!! test!!!</span>
+      </header> */}
     </div>
   );
 }
