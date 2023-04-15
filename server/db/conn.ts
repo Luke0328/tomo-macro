@@ -6,12 +6,9 @@ const db_uri = process.env.ATLAS_URI;
 
 // connect to mongodb
 async function connectToDb() {
+	// console.log(db_uri);
 	await connect(`${db_uri}`)
-		.then(() => console.log("Connected to Mongodb"));
-
-	// createUser("test@gmail.com", "abcdefg");
-	// checkForUser("test@gmail.com")
-	// 	.then((b) => console.log("User exists is " + b));
+		.then(() => console.log(`Connected to Mongodb on ${db_uri}`));
 	addRecipe("test@gmail.com", {name: "food"});
 }
 
@@ -27,7 +24,7 @@ async function checkForUser(email: string) {
 // create new user
 async function createUser(email: string, pwd: string) {
 	try {
-		const newUser = await User.create({ email: email, pwd: pwd });
+		const newUser = await User.create({ email: email, password: pwd });
 		console.log(newUser);
 	} catch (e: any) {
 		console.log(e.message);

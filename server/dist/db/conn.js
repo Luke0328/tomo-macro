@@ -16,11 +16,9 @@ const db_uri = process.env.ATLAS_URI;
 // connect to mongodb
 function connectToDb() {
     return __awaiter(this, void 0, void 0, function* () {
+        // console.log(db_uri);
         yield (0, mongoose_1.connect)(`${db_uri}`)
-            .then(() => console.log("Connected to Mongodb"));
-        // createUser("test@gmail.com", "abcdefg");
-        // checkForUser("test@gmail.com")
-        // 	.then((b) => console.log("User exists is " + b));
+            .then(() => console.log(`Connected to Mongodb on ${db_uri}`));
         addRecipe("test@gmail.com", { name: "food" });
     });
 }
@@ -39,7 +37,7 @@ function checkForUser(email) {
 function createUser(email, pwd) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const newUser = yield User_1.User.create({ email: email, pwd: pwd });
+            const newUser = yield User_1.User.create({ email: email, password: pwd });
             console.log(newUser);
         }
         catch (e) {

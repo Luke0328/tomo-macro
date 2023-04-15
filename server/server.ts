@@ -10,6 +10,8 @@ app.use(express.json());
 
 import { connectToDb } from "./db/conn";
 
+connectToDb().catch(console.dir);
+
 app.get("/", (req, res) => {
     res.send("HELLO");
 })
@@ -17,7 +19,7 @@ app.get("/", (req, res) => {
 app.post('/api/register', async (req, res) => {
   console.log(req.body);
   try{
-    const newUser = await User.create({
+    await User.create({
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       email: req.body.email,
@@ -27,12 +29,11 @@ app.post('/api/register', async (req, res) => {
   }catch(err){
     res.json({status: 'registration error'});
   }
-  res.json({status: 'ok'})
 })
 
 app.listen(port, () => {
   // connect to db when server starts
-  connectToDb().catch(console.dir);
+  // connectToDb().catch(console.dir);
 
   console.log(`Server is running on port: ${port}`);
 });

@@ -6,7 +6,7 @@ interface IUser {
     firstName: string,
     lastName: string,
     email: string,
-    pwd: string,
+    password: string,
     recipes: Array<IRecipe>,
     dataByDate: Array<IDateData>,
 }
@@ -26,7 +26,7 @@ const userSchema = new Schema<IUser>({
         lowercase: true,
         unique: true,
     },
-    pwd: {
+    password: {
         type: String,
         required: true,
     },

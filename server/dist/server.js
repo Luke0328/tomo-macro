@@ -21,13 +21,14 @@ const port = process.env.PORT || 8080;
 app.use(cors());
 app.use(express_1.default.json());
 const conn_1 = require("./db/conn");
+(0, conn_1.connectToDb)().catch(console.dir);
 app.get("/", (req, res) => {
     res.send("HELLO");
 });
 app.post('/api/register', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(req.body);
     try {
-        const newUser = yield User_1.User.create({
+        yield User_1.User.create({
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             email: req.body.email,
@@ -38,10 +39,9 @@ app.post('/api/register', (req, res) => __awaiter(void 0, void 0, void 0, functi
     catch (err) {
         res.json({ status: 'registration error' });
     }
-    res.json({ status: 'ok' });
 }));
 app.listen(port, () => {
     // connect to db when server starts
-    (0, conn_1.connectToDb)().catch(console.dir);
+    // connectToDb().catch(console.dir);
     console.log(`Server is running on port: ${port}`);
 });
