@@ -27,15 +27,18 @@ const Register = () => {
                 {/* <label htmlFor="email">Email</label> */}
             
                 <div className="flex flex-col justify-center items-center w-full">
+                <div className="flex justify-between w-4/5">
+                        <input type="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="First name..." id="firstName" name="firstName" className="w-full"/>
+                        <input type="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last name..." id="lastName" name="lastName" className="w-full"/>
+                    </div>
                     <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="youremail@gmail.com" id="email" name="email" className="w-4/5"/>
-                    <input type="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="First name..." id="firstName" name="firstName" className="w-2/5"/>
-                    <input type="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last name..." id="lastName" name="lastName" className="w-2/5"/>
+
                     <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" id="password" name="password" className="w-4/5"/>
                 </div>
 
                 <div className="flex flex-col w-full">
                     <button>Register</button>
-                    <div className="flex justify-center">Or already have an account?</div>
+                    <div className="flex justify-center">Already have an account?</div>
                     <button onClick={handleSwap}>Login</button>
                 </div>
             </form>

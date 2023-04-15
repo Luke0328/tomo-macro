@@ -33,7 +33,7 @@ const Login = () => {
                     <button>Login</button>
                     <button onClick={handleSwap}>Register</button>
                 </div>
-                <span className="w-full text-right mr-2">Forgot your password?</span>
+                <span className="w-full text-right mr-20 text-xs">Forgot your password?</span>
 
                 <div className="flex flex-col align-center w-4/5 h-1/5">
                     <div className="flex justify-center">Or</div>
