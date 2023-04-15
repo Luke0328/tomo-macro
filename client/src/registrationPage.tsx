@@ -14,16 +14,32 @@ const Register = () => {
     }
 
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        console.log('handling registration for ' + firstName);
+
+        const response = await fetch('http://localhost:8080/api/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                firstName,
+                lastName,
+                email,
+                password,
+            }),
+        })
+        const data = await response.json();
+        console.log('handling submit');
+        console.log('handling registration \n' + data.email);
     }
+
 
 
     return (
         <div className="flex flex-col w-2/5 h-2/5 rounded border-2 border-solid border-black items-center"> 
             <h3>Start your fitness journey with TomoMacro</h3>
-            <form className="w-full flex flex-col justify-center items-center" onSubmit={handleSubmit}>
+            <form className="w-full flex flex-col justify-center items-center" id="registration" onSubmit={handleSubmit}>
                 {/* <label htmlFor="email">Email</label> */}
             
                 <div className="flex flex-col justify-center items-center w-full">
@@ -37,7 +53,7 @@ const Register = () => {
                 </div>
 
                 <div className="flex flex-col w-full">
-                    <button>Register</button>
+                    <button type="submit" form="registration">Register</button>
                     <div className="flex justify-center">Already have an account?</div>
                     <button onClick={handleSwap}>Login</button>
                 </div>

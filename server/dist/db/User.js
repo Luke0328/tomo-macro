@@ -5,6 +5,14 @@ const mongoose_1 = require("mongoose");
 const Recipe_1 = require("./Recipe");
 const DateData_1 = require("./DateData");
 const userSchema = new mongoose_1.Schema({
+    firstName: {
+        type: String,
+        required: true,
+    },
+    lastName: {
+        type: String,
+        required: true,
+    },
     email: {
         type: String,
         required: true,
@@ -25,5 +33,6 @@ const userSchema = new mongoose_1.Schema({
     },
 });
 exports.userSchema = userSchema;
+// TO DO: Recipe decorator -> references the original recipe by id but has modifications
 const User = (0, mongoose_1.model)("User", userSchema);
 exports.User = User;
