@@ -14,6 +14,7 @@ const userSchema = new Schema<IUser>({
         type: String,
         required: true,
         lowercase: true,
+        unique: true,
     },
     pwd: {
         type: String,
@@ -21,12 +22,16 @@ const userSchema = new Schema<IUser>({
     },
     recipes: {
         type: [recipeSchema],
+        default: [],
     },
     dataByDate: {
         type: [dateDataSchema],
+        default: [],
     },
 });
 
-// TO DO: Recipe decorator -> references the original recipe but has modifications
+// TO DO: Recipe decorator -> references the original recipe by id but has modifications
 
-export const User = model("user", userSchema);
+const User = model<IUser>("User", userSchema);
+
+export { IUser, userSchema, User };

@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema } from "mongoose";
 import { recipeSchema, IRecipe } from "./Recipe"
 
 interface IDateData {
@@ -30,5 +30,7 @@ const dateDataSchema = new Schema<IDateData>({
         default: 0,
     },
 });
+
+// const DateData = model<IDateData>("DateData", dateDataSchema);
 
 export { IDateData, dateDataSchema };

@@ -1,14 +1,8 @@
-import { Schema } from "mongoose";
-
-interface IRecipe {
-    name: string,
-    cals?: number,
-    protein?: number,
-    carbs?: number,
-    fat?: number,
-}
-
-const recipeSchema = new Schema<IRecipe>({
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.recipeSchema = void 0;
+const mongoose_1 = require("mongoose");
+const recipeSchema = new mongoose_1.Schema({
     name: {
         type: String,
         required: true,
@@ -30,7 +24,4 @@ const recipeSchema = new Schema<IRecipe>({
         default: 0,
     },
 });
-
-// const Recipe = model<IRecipe>("Recipe", recipeSchema);
-
-export { IRecipe, recipeSchema };
+exports.recipeSchema = recipeSchema;
