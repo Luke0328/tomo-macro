@@ -10,13 +10,12 @@ require("dotenv").config({ path: "./config.env" });
 const port = process.env.PORT || 8080;
 app.use(cors());
 app.use(express_1.default.json());
-// get driver connection
-const dbo = require("./db/conn");
+const conn_1 = require("./db/conn");
 app.get("/", (req, res) => {
     res.send("HELLO");
 });
 app.listen(port, () => {
-    // perform a database connection when server starts
-    dbo.run().catch(console.dir);
+    // connect to db when server starts
+    (0, conn_1.connectToDb)().catch(console.dir);
     console.log(`Server is running on port: ${port}`);
 });

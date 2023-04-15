@@ -8,27 +8,56 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const { MongoClient } = require("mongodb");
-const Db = process.env.ATLAS_URI;
-const client = new MongoClient(Db, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
-var _db;
-module.exports = {
-    run: function () {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                // Connect the client to the server (optional starting in v4.7)
-                yield client.connect();
-                // Send a ping to confirm a successful connection
-                yield client.db("admin").command({ ping: 1 });
-                console.log("Pinged your deployment. You successfully connected to MongoDB!");
-            }
-            finally {
-                // Ensures that the client will close when you finish/error
-                yield client.close();
-            }
-        });
-    }
-};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.connectToDb = void 0;
+const mongoose_1 = require("mongoose");
+const User_1 = require("./User");
+const db_uri = process.env.ATLAS_URI;
+// connect to mongodb
+function connectToDb() {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield (0, mongoose_1.connect)(`${db_uri}`)
+            .then(() => console.log("Connected to Mongodb"));
+        // createUser("test@gmail.com", "abcdefg");
+        // checkForUser("test@gmail.com")
+        // 	.then((b) => console.log("User exists is " + b));
+        addRecipe("test@gmail.com", { name: "food" });
+    });
+}
+exports.connectToDb = connectToDb;
+// check if user exists (for logging in)
+function checkForUser(email) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const userExists = yield User_1.User.exists({ email: email });
+        if (userExists === null) {
+            return false;
+        }
+        return true;
+    });
+}
+// create new user
+function createUser(email, pwd) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const newUser = yield User_1.User.create({ email: email, pwd: pwd });
+            console.log(newUser);
+        }
+        catch (e) {
+            console.log(e.message);
+        }
+    });
+}
+// add new recipe to user
+function addRecipe(email, recipe) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const user = yield User_1.User.where("email").equals(email);
+            user[0].recipes.push(recipe);
+            yield user[0].save();
+            console.log(user);
+        }
+        catch (e) {
+            console.log(e.message);
+        }
+    });
+}
