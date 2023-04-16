@@ -3,6 +3,7 @@ import { User } from "./db/User"
 
 const app = express();
 const cors = require("cors");
+const bcrypt = require("bcrypt");
 require("dotenv").config({ path: "./config.env" });
 const port = process.env.PORT || 8080;
 app.use(cors());
@@ -17,17 +18,48 @@ app.get("/", (req, res) => {
 })
  
 app.post('/api/register', async (req, res) => {
-  console.log(req.body);
+  if(await User.exists({email: req.body.email})){
+    res.json({status:'error', message: 'User already exists'});
+    return;
+  }
+  else{
+    try{
+      await bcrypt.hash(req.body.password, 10, (err: Error, hash: string) => {
+          if(err){
+            res.json({status: 'error', message: 'Error hashing password'});
+            //throw(err);
+          }else{
+          User.create({
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            email: req.body.email,
+            password: hash,
+          })
+          res.json({status: 'ok'});
+        }
+      });
+    }catch(err){
+      res.json({status: 'error', message: 'Error registering user'});
+    }
+  }
+})
+
+app.post('/api/login', async (req, res) => {
   try{
-    await User.create({
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
-      password: req.body.password,
-    })
-    res.json({status: 'ok'});
+    // console.log(User.findOne(req.body.email));
+    const user = await User.findOne({ email: req.body.email });
+    // console.log('hello')
+    // console.log(user)
+    const passwordsMatch = await bcrypt.compare(req.body.password,user?.password);
+
+    if(!passwordsMatch){
+      res.json({status: 'error', message: `Invalid email or password`});
+    }else{
+      console.log('Logged in successfully');
+      res.json({status: 'ok', message: `Login successful`});
+    }
   }catch(err){
-    res.json({status: 'registration error'});
+    res.json({status: 'error', message: `Invalid email or password`});
   }
 })
 

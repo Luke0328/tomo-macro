@@ -30,8 +30,11 @@ const Register = () => {
             }),
         })
         const data = await response.json();
-        console.log('handling submit');
-        console.log('handling registration \n' + data.email);
+        if(data.status === 'ok'){
+            navigate('/');
+        }else{
+            alert('Error registering user! Perhaps you exist in the system already?')
+        }
     }
 
 

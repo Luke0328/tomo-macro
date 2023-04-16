@@ -16,6 +16,7 @@ const express_1 = __importDefault(require("express"));
 const User_1 = require("./db/User");
 const app = (0, express_1.default)();
 const cors = require("cors");
+const bcrypt = require("bcrypt");
 require("dotenv").config({ path: "./config.env" });
 const port = process.env.PORT || 8080;
 app.use(cors());
@@ -26,18 +27,50 @@ app.get("/", (req, res) => {
     res.send("HELLO");
 });
 app.post('/api/register', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(req.body);
+    if (yield User_1.User.exists({ email: req.body.email })) {
+        res.json({ status: 'error', message: 'User already exists' });
+        return;
+    }
+    else {
+        try {
+            yield bcrypt.hash(req.body.password, 10, (err, hash) => {
+                if (err) {
+                    res.json({ status: 'error', message: 'Error hashing password' });
+                    //throw(err);
+                }
+                else {
+                    User_1.User.create({
+                        firstName: req.body.firstName,
+                        lastName: req.body.lastName,
+                        email: req.body.email,
+                        password: hash,
+                    });
+                    res.json({ status: 'ok' });
+                }
+            });
+        }
+        catch (err) {
+            res.json({ status: 'error', message: 'Error registering user' });
+        }
+    }
+}));
+app.post('/api/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield User_1.User.create({
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            email: req.body.email,
-            password: req.body.password,
-        });
-        res.json({ status: 'ok' });
+        // console.log(User.findOne(req.body.email));
+        const user = yield User_1.User.findOne({ email: req.body.email });
+        // console.log('hello')
+        // console.log(user)
+        const passwordsMatch = yield bcrypt.compare(req.body.password, user === null || user === void 0 ? void 0 : user.password);
+        if (!passwordsMatch) {
+            res.json({ status: 'error', message: `Invalid email or password` });
+        }
+        else {
+            console.log('Logged in successfully');
+            res.json({ status: 'ok', message: `Login successful` });
+        }
     }
     catch (err) {
-        res.json({ status: 'registration error' });
+        res.json({ status: 'error', message: `Invalid email or password` });
     }
 }));
 app.listen(port, () => {

@@ -8,9 +8,27 @@ const Login = () => {
 
     const navigate = useNavigate();
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        console.log(email);
+        const response = await fetch('http://localhost:8080/api/login', {
+            method: 'POST',
+            headers:{
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email,
+                password,
+            }),
+        })
+        const data = await response.json();
+        if(data.status === 'ok'){
+            console.log('frontend: successfully logged in ');
+            navigate('Home');
+        }
+        else{
+            alert('Invalid email or password!');
+        }
+        // console.log(email);
     }
 
     const handleSwap = () => {
@@ -21,7 +39,7 @@ const Login = () => {
         
         <div className="flex flex-col w-2/5 h-2/5 rounded border-2 border-solid border-black items-center"> 
             <h3>Welcome to TomoMacro!</h3>
-            <form className="w-full flex flex-col justify-center items-center" onSubmit={handleSubmit}>
+            <form className="w-full flex flex-col justify-center items-center" id="login" onSubmit={handleSubmit}>
                 {/* <label htmlFor="email">Email</label> */}
             
                 <div className="flex flex-col justify-center items-center w-full">
@@ -30,7 +48,7 @@ const Login = () => {
                 </div>
 
                 <div className="flex justify-around w-full">
-                    <button>Login</button>
+                    <button type="submit" form="login">Login</button>
                     <button onClick={handleSwap}>Register</button>
                 </div>
                 <span className="w-full text-right mr-20 text-xs">Forgot your password?</span>
