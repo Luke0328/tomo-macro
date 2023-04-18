@@ -6,16 +6,21 @@ interface IRecipeBlock {
     protein?: number,
     carbs?: number,
     fats?: number,
-    isEditing: boolean,
-    handleRecipeChange: (recipeName:string, field: string, newValue: string) => void,
+    isEditing?: boolean,
+}
+
+interface IRecipeNameInput {
+    value: string,
+    isEditing?: boolean,
+    handleChange: (newVal: any) => void,
 }
 
 interface IMacroRow {
     labelName: string,
     value?: number,
     recipeName: string
-    isEditing: boolean,
-    handleRecipeChange: (recipeName:string, field: string, newValue: string) => void,
+    isEditing?: boolean,
+    handleChange: (newVal: any) => void,
 }
 
 const MyRecipesMenu:FC<any> = () => {
@@ -32,7 +37,6 @@ const MyRecipesMenu:FC<any> = () => {
                 carbs: 35,
                 fats: 15,
                 isEditing: false,
-                handleRecipeChange: handleRecipeChange,
             }
         ]
     ), []);
@@ -46,7 +50,6 @@ const MyRecipesMenu:FC<any> = () => {
             carbs={recipe.carbs}
             fats={recipe.fats}
             isEditing={recipe.isEditing}
-            handleRecipeChange= {handleRecipeChange}
         />
     );
 
@@ -62,14 +65,17 @@ const MyRecipesMenu:FC<any> = () => {
                 carbs: 0,
                 fats: 0,
                 isEditing: true,
-                handleRecipeChange: handleRecipeChange,
             }
         ]
         setRecipes(newRecipes);
         recipeBlockList = convertToRecipeBlocks();
     }
 
-    function handleRecipeChange(recipeName:string, field: string, newValue: string) {
+    function handleRecipeNameChange() {
+
+    }
+
+    function handleSave(recipeName:string, field: string, newValue: string) {
 
         console.log(newValue);
         let newValueInt = 0;
@@ -96,7 +102,6 @@ const MyRecipesMenu:FC<any> = () => {
             carbs: field === "carbohydrates" ? newValueInt: recipes[recipeNum].carbs,
             fats: field === "fats" ? newValueInt: recipes[recipeNum].fats,
             isEditing: true,
-            handleRecipeChange: handleRecipeChange,
         }
 
         // update state with new recipe
@@ -117,60 +122,144 @@ const MyRecipesMenu:FC<any> = () => {
     );
 }
 
-const RecipeBlock:FC<IRecipeBlock> = ({ recipeName, calories, protein, carbs, fats, isEditing, handleRecipeChange }) => {
+const RecipeBlock:FC<IRecipeBlock> = ({ recipeName, calories, protein, carbs, fats, isEditing }) => {
+
+    const [localRecipeName, setLocalRecipeName] = useState<string>(recipeName);
+    const [localCalories, setLocalCalories] = useState<number | undefined>(calories);
+    const [localProtein, setLocalProtein] = useState<number | undefined>(protein);
+    const [localCarbs, setLocalCarbs] = useState<number | undefined>(carbs);
+    const [localFats, setLocalFats] = useState<number | undefined>(fats);
+
+
+    function handleCalorieChange(newVal: string) {
+        if(newVal === "") {
+            setLocalCalories(0);
+            return;
+        }
+        const newValInt = Number.parseInt(newVal);
+        if (Number.isNaN(newValInt)) {
+            return;
+        }
+        setLocalCalories(newValInt);
+    }
+
+    function handleProteinChange(newVal: string) {
+        if(newVal === "") {
+            setLocalProtein(0);
+            return;
+        }
+        const newValInt = Number.parseInt(newVal);
+        if (Number.isNaN(newValInt)) {
+            return;
+        }
+        setLocalProtein(newValInt);
+    }
+
+    function handleCarbsChange(newVal: string) {
+        if(newVal === "") {
+            setLocalCarbs(0);
+            return;
+        }
+        const newValInt = Number.parseInt(newVal);
+        if (Number.isNaN(newValInt)) {
+            return;
+        }
+        setLocalCarbs(newValInt);
+    }
+
+    function handleFatsChange(newVal: string) {
+        if(newVal === "") {
+            setLocalFats(0);
+            return;
+        }
+        const newValInt = Number.parseInt(newVal);
+        if (Number.isNaN(newValInt)) {
+            return;
+        }
+        setLocalFats(newValInt);
+    }
 
     return(
         <div className="flex gap-10">
             <div>
-                {recipeName}:
+                <RecipeNameInput 
+                    value={localRecipeName}
+                    isEditing={isEditing}
+                    handleChange={setLocalRecipeName}
+                />
             </div>
 
             <ul>
                 <li key="0">
                     <MacroRow 
                         labelName="calories"
-                        value={calories}
+                        value={localCalories}
                         isEditing={isEditing}
                         recipeName={recipeName}
-                        handleRecipeChange={handleRecipeChange}
+                        handleChange={handleCalorieChange}
                     />                  
                 </li>
                 <li key="1">
                     <MacroRow 
                         labelName="protein"
-                        value={protein}
+                        value={localProtein}
                         isEditing={isEditing}
                         recipeName={recipeName}
-                        handleRecipeChange={handleRecipeChange}
+                        handleChange={handleProteinChange}
                     />  
                 </li>
                 <li key="2">
                     <MacroRow 
                         labelName="carbohydrates"
-                        value={carbs}
+                        value={localCarbs}
                         isEditing={isEditing}
                         recipeName={recipeName}
-                        handleRecipeChange={handleRecipeChange}
-
+                        handleChange={handleCarbsChange}
                     />   
                 </li>
                 <li key="3">
                     <MacroRow 
                         labelName="fats"
-                        value={fats}
+                        value={localFats}
                         isEditing={isEditing}
                         recipeName={recipeName}
-                        handleRecipeChange={handleRecipeChange}
+                        handleChange={handleFatsChange}
                     />  
                 </li>
             </ul>
 
-            <button>Save</button>
         </div>
     );
 }
 
-const MacroRow:FC<IMacroRow> = ({ labelName, value, recipeName, isEditing, handleRecipeChange }) => {
+const RecipeNameInput:FC<IRecipeNameInput> = ({ value, isEditing, handleChange}) => {
+    if(isEditing) {
+        return(
+            <label>
+                <input 
+                    type="text" 
+                    value={value} 
+                    className="w-24"
+                    onChange={(e) => {handleChange(e.target.value)}}
+                />
+                :
+            </label> 
+        );
+    }
+    return(
+        <label>
+            <input 
+                type="text" 
+                value={value} 
+                className="w-24"
+                disabled={true}
+            />
+            :
+        </label> 
+    ); 
+}
+
+const MacroRow:FC<IMacroRow> = ({ labelName, value, recipeName, isEditing, handleChange }) => {
     if(isEditing) {
         return (
             <label>
@@ -178,7 +267,7 @@ const MacroRow:FC<IMacroRow> = ({ labelName, value, recipeName, isEditing, handl
                     type="text" 
                     value={value} 
                     className="w-10"
-                    onChange={(e) => {handleRecipeChange(recipeName, labelName, e.target.value)}}
+                    onChange={(e) => {handleChange(e.target.value)}}
                 />
                 {labelName}
             </label>  
@@ -196,5 +285,11 @@ const MacroRow:FC<IMacroRow> = ({ labelName, value, recipeName, isEditing, handl
         </label>  
     );
 }
+
+// const SaveButton = ({ handleSave }) => {
+//     return (
+//         <button>Save</button>
+//     );
+// }
 
 export default MyRecipesMenu;
