@@ -38,7 +38,7 @@ interface ISaveButton {
 // menu containing recipes
 const MyRecipesMenu:FC<any> = () => {
 
-    // state trackign recipes in the form of objects
+    // state tracking recipes in the form of objects
     const [recipes, setRecipes] = useState<Array<IRecipeBlock>>([]);
 
     // get initial data
@@ -59,8 +59,9 @@ const MyRecipesMenu:FC<any> = () => {
     ), []);
 
     // turn list of objects to RecipeBlock components to render
-    const convertToRecipeBlocks = () => recipes.map(recipe => 
+    const convertToRecipeBlocks = () => recipes.map((recipe, i) => 
         <RecipeBlock 
+            key={i}
             recipeName={recipe.recipeName}
             calories={recipe.calories}
             protein={recipe.protein}
