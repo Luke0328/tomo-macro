@@ -43,19 +43,23 @@ const Food:FC<IFood> = ({ foodName, calories, protein, fat, carbs }) => {
 // the food added can be brand new or something that exists already in the user's recipes
 // should be able to edit what foods were in the meal and delete foods from a meal
 // the Meal component 
-const Meal = (props: { handleMacroUpdate: (calories: number, protein: number, carbs: number, fat: number) => void, mealNumber: number}) => {
+const Meal = (props: { handleMacroUpdate: (calories: number, protein: number, fat: number, carbs: number) => void, mealNumber: number}) => {
     const[mealFoods, setMealFoods] = useState<IFood[]>([]);
 
     const addFoodToMeal = (food: IFood) => {
         setMealFoods([...mealFoods,food]);
+        props.handleMacroUpdate(food.calories,food.protein,food.fat,food.carbs)
+        // mealFoods.map((meal) => props.handleMacroUpdate(meal.calories,meal.protein,meal.carbs,meal.fat))
     }
 
     const deleteFoodFromMeal = (index: number) => {
         const newMealFoods = [...mealFoods];
         const deletedFood = mealFoods[index];
-        props.handleMacroUpdate(-1 * deletedFood.calories, -1 * deletedFood.protein, -1 * deletedFood.fat,-1 * deletedFood.carbs);
+        // props.handleMacroUpdate(-1 * deletedFood.calories, -1 * deletedFood.protein, -1 * deletedFood.fat,-1 * deletedFood.carbs);
         newMealFoods.splice(index, 1);
         setMealFoods(newMealFoods);
+        props.handleMacroUpdate(-1 * deletedFood.calories, -1 * deletedFood.protein, -1 * deletedFood.fat,-1 * deletedFood.carbs);
+        // mealFoods.map((meal) => props.handleMacroUpdate(meal.calories,meal.protein,meal.fat,meal.carbs))
     };
 
     return (
@@ -87,7 +91,7 @@ const AddFoodButton = (
       const protein = Number(form.protein.value);
       const carbs = Number(form.carbs.value);
       const fat = Number(form.fat.value);
-      props.handleMacroUpdate(calories,protein,carbs,fat);
+    //   props.handleMacroUpdate(calories,protein,carbs,fat);
       props.addFoodToMeal({ 
         foodName: foodName,
         calories: calories,
@@ -143,6 +147,7 @@ const FoodList = ({ foods, onDeleteFood }: { foods: IFood[]; onDeleteFood: (inde
         <ul>
           {foods.map((food, index) => (
             <li key={index}>
+              <span>Name: {food.foodName}</span>
               <span>Calories: {food.calories}</span>
               <span>Protein: {food.protein}</span>
               <span>Carbs: {food.carbs}</span>
@@ -184,7 +189,6 @@ const MealsContainer = (props: {handleMacroUpdate: (calories: number, protein: n
       return (
         <div>
             {meals.map((meal) => {
-                // return <div>hi</div>
                 return <div key={meal.key}>{meal}</div>
             })}
             <AddMealButton addMeal={addMeal} />
@@ -220,7 +224,7 @@ const MealsBlockContainer = () => {
     const [totalCarbs, setTotalCarbs] = useState<number>(0);
 
     // to update the macro footer
-    const handleMacroUpdate = (calories: number, protein: number, carbs: number, fat: number) => {
+    const handleMacroUpdate = (calories: number, protein: number, fat: number, carbs: number) => {
         let currentCalories = totalCalories;
         let currentProtein = totalProtein;
         let currentFat = totalFat;
@@ -231,10 +235,10 @@ const MealsBlockContainer = () => {
         currentFat += fat;
         currentCarbs += carbs;
 
-        setTotalCalories(currentCalories);
-        setTotalProtein(currentProtein);
-        setTotalFat(currentFat);
-        setTotalCarbs(currentCarbs);
+        setTotalCalories((totalCalories) => totalCalories + calories);
+        setTotalProtein((totalProtein) => totalProtein + protein);
+        setTotalFat((totalFat) => totalFat + fat);
+        setTotalCarbs((totalCarbs) => totalCarbs + carbs);
     }
 
     return (
