@@ -21,7 +21,7 @@ const Login = () => {
             }),
         })
         const data = await response.json();
-        if(data.status === 'ok'){
+        if(data.ok){
             console.log('frontend: successfully logged in ');
             navigate('Home');
         }

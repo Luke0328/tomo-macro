@@ -1,4 +1,5 @@
 import express, {Express, Request, Response} from "express";
+import jwt from "jsonwebtoken";
 import { User } from "./db/User"
 
 const app = express();
@@ -25,16 +26,16 @@ app.post('/api/register', async (req, res) => {
   else{
     try{
       await bcrypt.hash(req.body.password, 10, (err: Error, hash: string) => {
-          if(err){
+          if (err) {
             res.json({status: 'error', message: 'Error hashing password'});
             //throw(err);
-          }else{
-          User.create({
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            email: req.body.email,
-            password: hash,
-          })
+          } else {
+			User.create({
+				firstName: req.body.firstName,
+				lastName: req.body.lastName,
+				email: req.body.email,
+				password: hash,
+			})
           res.json({status: 'ok'});
         }
       });
@@ -44,24 +45,50 @@ app.post('/api/register', async (req, res) => {
   }
 })
 
+// endpoint for testing token access
+app.get('/test_login', authenticateToken, (req, res) => {
+	console.log(req.body);
+	res.json("SUCCESS");
+})
+
 app.post('/api/login', async (req, res) => {
-  try{
+  console.log(req.body);
+  try {
     // console.log(User.findOne(req.body.email));
     const user = await User.findOne({ email: req.body.email });
     // console.log('hello')
     // console.log(user)
-    const passwordsMatch = await bcrypt.compare(req.body.password,user?.password);
+    const passwordsMatch = await bcrypt.compare(req.body.password, user?.password);
 
-    if(!passwordsMatch){
-      res.json({status: 'error', message: `Invalid email or password`});
-    }else{
+    if (!passwordsMatch) {
+      return res.status(401).json({status: 'error', message: `Invalid email or password`});
+    } else {
       console.log('Logged in successfully');
-      res.json({status: 'ok', message: `Login successful`});
+      // res.status(200).json({status: 'ok', message: `Login successful`});
     }
-  }catch(err){
-    res.json({status: 'error', message: `Invalid email or password`});
+  } catch(err) {
+    return res.status(401).json({status: 'error', message: `Invalid email or password`});
   }
+
+  // serialize body as jwt
+  const accessToken = jwt.sign(req.body, process.env.ACCESS_TOKEN_SECRET as string);
+  res.status(201).json( {status: 'ok', accessToken: accessToken} )
 })
+
+// middleware to authenticate token from the client, use in routes that require user to be logged in
+function authenticateToken(req: any, res: any, next: any) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // check for authorization header, get token
+  if(token == null) {
+	return res.sendStatus(401);
+  }
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string, (err: any, user: any) => {
+	if (err) return res.statusCode(403);
+	req.body = user;
+	next();
+  })
+}
 
 app.listen(port, () => {
   // connect to db when server starts
