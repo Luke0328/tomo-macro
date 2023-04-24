@@ -36,29 +36,31 @@ const Login = () => {
     }
 
     return (
-        
+        <>
+        {/* <h1>Welcome to TomoMacro!</h1> */}
         <div className="flex flex-col w-2/5 h-2/5 rounded border-2 border-solid border-black items-center"> 
-            <h3>Welcome to TomoMacro!</h3>
-            <form className="w-full flex flex-col justify-center items-center" id="login" onSubmit={handleSubmit}>
+            <h1>Welcome to TomoMacro!</h1>
+            <form className="w-full flex flex-col justify-center items-center h-full" id="login" onSubmit={handleSubmit}>
                 {/* <label htmlFor="email">Email</label> */}
             
-                <div className="flex flex-col justify-center items-center w-full">
-                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="youremail@gmail.com" id="email" name="email" className="w-4/5"/>
-                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" id="password" name="password" className="w-4/5"/>
+                <div className="flex flex-col justify-center items-center w-full h-full">
+                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="youremail@gmail.com" id="email" name="email" className="w-4/5 h-full"/>
+                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" id="password" name="password" className="w-4/5 h-full"/>
                 </div>
 
-                <div className="flex justify-around w-full">
-                    <button type="submit" form="login">Login</button>
-                    <button onClick={handleSwap}>Register</button>
+                <div className="flex justify-around items-center w-4/5 h-full">
+                    <button type="submit" form="login" className="border-solid border-black border-2 w-full m-3 h-3/5 rounded-md">Login</button>
+                    <button onClick={handleSwap} className="border-solid border-black border-2 w-full h-3/5 m-3 rounded-md">Register</button>
                 </div>
-                <span className="w-full text-right mr-20 text-xs">Forgot your password?</span>
-
+                {/* <span className="w-full text-right mr-20 text-xs">Forgot your password?</span> */}
+{/* 
                 <div className="flex flex-col align-center w-4/5 h-1/5">
                     <div className="flex justify-center">Or</div>
                     <button>Sign up with Google</button>
-                </div>
+                </div> */}
             </form>
         </div>
+        </>
     );
 }
 
