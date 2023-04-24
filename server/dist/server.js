@@ -55,17 +55,16 @@ app.post('/api/register', (req, res) => __awaiter(void 0, void 0, void 0, functi
         }
     }
 }));
-// endpoint for testing token access
-app.get('/test_login', authenticateToken, (req, res) => {
-    console.log(req.body);
-    res.json("SUCCESS");
-});
+// endpoint for testing authenticating token
+// app.get('/test_login', authenticateToken, (req, res) => {
+// 	console.log(req.body);
+// 	res.json("SUCCESS");
+// })
 app.post('/api/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(req.body);
     try {
         // console.log(User.findOne(req.body.email));
         const user = yield User_1.User.findOne({ email: req.body.email });
-        // console.log('hello')
         // console.log(user)
         const passwordsMatch = yield bcrypt.compare(req.body.password, user === null || user === void 0 ? void 0 : user.password);
         if (!passwordsMatch) {
@@ -83,6 +82,18 @@ app.post('/api/login', (req, res) => __awaiter(void 0, void 0, void 0, function*
     const accessToken = jsonwebtoken_1.default.sign(req.body, process.env.ACCESS_TOKEN_SECRET);
     res.status(201).json({ status: 'ok', accessToken: accessToken });
 }));
+// get endpoint for user's recipes
+app.get('/api/recipes', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("get");
+    try {
+        const user = yield User_1.User.where("email").equals(req.body.email);
+        // console.log(user[0].recipes);
+        res.status(200).json(user[0].recipes);
+    }
+    catch (e) {
+        console.log(e.message);
+    }
+}));
 // middleware to authenticate token from the client, use in routes that require user to be logged in
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
@@ -91,8 +102,10 @@ function authenticateToken(req, res, next) {
         return res.sendStatus(401);
     }
     jsonwebtoken_1.default.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-        if (err)
-            return res.statusCode(403);
+        if (err) {
+            console.log("Authorization failed");
+            return res.status(403);
+        }
         req.body = user;
         next();
     });

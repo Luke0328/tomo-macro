@@ -9,7 +9,8 @@ async function connectToDb() {
 	// console.log(db_uri);
 	await connect(`${db_uri}`)
 		.then(() => console.log(`Connected to Mongodb on ${db_uri}`));
-	addRecipe("test@gmail.com", {name: "food"});
+	// addRecipe("luke@gmail.com", {name: "Pasta", cals: 500, protein: 30, carbs: 40, fat: 12});
+	// addRecipe("luke@gmail.com", {name: "Sandwich", cals: 550, protein: 25, carbs: 45, fat: 16});
 }
 
 // check if user exists (for logging in)

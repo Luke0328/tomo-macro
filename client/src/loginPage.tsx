@@ -10,7 +10,7 @@ const Login = () => {
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const response = await fetch('http://localhost:8080/api/login', {
+        const res = await fetch('http://localhost:8080/api/login', {
             method: 'POST',
             headers:{
                 'Content-Type': 'application/json',
@@ -20,15 +20,20 @@ const Login = () => {
                 password,
             }),
         })
-        const data = await response.json();
-        if(data.ok){
+        if(res.ok) {
             console.log('frontend: successfully logged in ');
-            navigate('Home');
-        }
-        else{
+            navigate('Home');        
+        } else{
             alert('Invalid email or password!');
+            return;
         }
+        const data = await res.json();
         // console.log(email);
+        // console.log(data.accessToken);
+
+        // store access token in local storage, add to headers for future get requests
+        // NOTE: can implement logging out by clearing localStorage
+        localStorage.setItem("accessToken", JSON.stringify(data.accessToken));
     }
 
     const handleSwap = () => {

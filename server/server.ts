@@ -45,18 +45,17 @@ app.post('/api/register', async (req, res) => {
   }
 })
 
-// endpoint for testing token access
-app.get('/test_login', authenticateToken, (req, res) => {
-	console.log(req.body);
-	res.json("SUCCESS");
-})
+// endpoint for testing authenticating token
+// app.get('/test_login', authenticateToken, (req, res) => {
+// 	console.log(req.body);
+// 	res.json("SUCCESS");
+// })
 
 app.post('/api/login', async (req, res) => {
   console.log(req.body);
   try {
     // console.log(User.findOne(req.body.email));
     const user = await User.findOne({ email: req.body.email });
-    // console.log('hello')
     // console.log(user)
     const passwordsMatch = await bcrypt.compare(req.body.password, user?.password);
 
@@ -75,6 +74,18 @@ app.post('/api/login', async (req, res) => {
   res.status(201).json( {status: 'ok', accessToken: accessToken} )
 })
 
+// get endpoint for user's recipes
+app.get('/api/recipes', authenticateToken, async (req, res) => {
+	console.log("get");
+	try {
+		const user: any = await User.where("email").equals(req.body.email);
+		// console.log(user[0].recipes);
+		res.status(200).json(user[0].recipes);
+	} catch (e: any) {
+		console.log(e.message);
+	}
+});
+
 // middleware to authenticate token from the client, use in routes that require user to be logged in
 function authenticateToken(req: any, res: any, next: any) {
   const authHeader = req.headers['authorization'];
@@ -84,7 +95,10 @@ function authenticateToken(req: any, res: any, next: any) {
   }
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string, (err: any, user: any) => {
-	if (err) return res.statusCode(403);
+	if (err) {
+		console.log("Authorization failed");
+		return res.status(403);
+	}
 	req.body = user;
 	next();
   })

@@ -42,21 +42,57 @@ const MyRecipesMenu:FC<any> = () => {
     const [recipes, setRecipes] = useState<Array<IRecipeBlock>>([]);
 
     // get initial data
-    useEffect( () => 
-        setRecipes([
-            {
-                recipeName: "Recipe 1",
-                calories: 500,
-                protein: 30,
-                carbs: 35,
-                fats: 15,
-                isEditing: false,
-                handleSave: handleSave,
-                handleEdit: handleEdit,
-                handleDelete: handleDelete,
-            }
-        ]
-    ), []);
+    useEffect( () => {
+        getRecipes();
+    } , []);
+        // setRecipes([
+        //     {
+        //         recipeName: "Recipe 1",
+        //         calories: 500,
+        //         protein: 30,
+        //         carbs: 35,
+        //         fats: 15,
+        //         isEditing: false,
+        //         handleSave: handleSave,
+        //         handleEdit: handleEdit,
+        //         handleDelete: handleDelete,
+        //     }
+        // ]
+
+    async function getRecipes() {
+        const res = await fetch('http://localhost:8080/api/recipes', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
+            },
+        })
+        if(!res.ok) {
+            console.log("Failed to get recipes");
+            return;
+        }
+
+        const data = await res.json();
+        console.log(data);
+        
+        let newRecipes: Array<IRecipeBlock> = [];
+        data.map((item: any) => {
+            newRecipes.push(
+                {
+                    recipeName: item.name,
+                    calories: item.cals,
+                    protein: item.protein,
+                    carbs: item.carbs,
+                    fats: item.fat,
+                    isEditing: false,
+                    handleSave: handleSave,
+                    handleEdit: handleEdit,
+                    handleDelete: handleDelete,
+                }
+            )
+        })
+        setRecipes(newRecipes);
+    }
 
     // turn list of objects to RecipeBlock components to render
     const convertToRecipeBlocks = () => recipes.map((recipe, i) => 
