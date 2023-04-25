@@ -12,6 +12,13 @@
   pointer-events: none;
 }
 
+.LoginAndRegistration {
+  background: linear-gradient(-45deg, #FFF8E8, #FCD581, #fbc95d, #fbb61f);
+  /* background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab); */
+  background-size: 400% 400%;
+  animation: login-registration-background 10s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
@@ -39,5 +46,18 @@
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+
+@keyframes login-registration-background {
+  0%{
+    background-position: 0% 0%;
+  }
+  50%{
+    background-position: 100% 50%;
+  }
+  100%{
+    background-position: 0% 50%;
   }
 }
