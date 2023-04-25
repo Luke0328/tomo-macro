@@ -5,10 +5,14 @@
 /* *{
   outline: orange solid 1px;
 } */
+@font-face {
+  font-family: "SECULARONE";
+  src: url("../public/fonts/Secular_One/SecularOne-Regular.ttf");
+}
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  font-family: "SECULARONE", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
