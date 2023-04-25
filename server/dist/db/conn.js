@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.connectToDb = void 0;
+exports.updateRecipes = exports.connectToDb = void 0;
 const mongoose_1 = require("mongoose");
 const User_1 = require("./User");
 const db_uri = process.env.ATLAS_URI;
@@ -21,6 +21,7 @@ function connectToDb() {
             .then(() => console.log(`Connected to Mongodb on ${db_uri}`));
         // addRecipe("luke@gmail.com", {name: "Pasta", cals: 500, protein: 30, carbs: 40, fat: 12});
         // addRecipe("luke@gmail.com", {name: "Sandwich", cals: 550, protein: 25, carbs: 45, fat: 16});
+        // updateRecipes("luke@gmail.com", [{name: "Pasta", cals: 500, protein: 30, carbs: 40, fat: 12}, {name: "Sandwich", cals: 550, protein: 25, carbs: 45, fat: 16}]);
     });
 }
 exports.connectToDb = connectToDb;
@@ -42,7 +43,7 @@ function createUser(email, pwd) {
             console.log(newUser);
         }
         catch (e) {
-            console.log(e.message);
+            throw e;
         }
     });
 }
@@ -56,7 +57,25 @@ function addRecipe(email, recipe) {
             console.log(user);
         }
         catch (e) {
-            console.log(e.message);
+            throw e;
         }
     });
 }
+// modify recipes from user
+function updateRecipes(email, recipes) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const user = yield User_1.User.where("email").equals(email);
+            user[0].recipes = [];
+            recipes.forEach((recipe) => {
+                user[0].recipes.push(recipe);
+            });
+            yield user[0].save();
+            console.log(user);
+        }
+        catch (e) {
+            throw e;
+        }
+    });
+}
+exports.updateRecipes = updateRecipes;

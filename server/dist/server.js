@@ -28,13 +28,13 @@ app.get("/", (req, res) => {
     res.send("HELLO");
 });
 app.post('/api/register', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    if (yield User_1.User.exists({ email: req.body.email })) {
+    if (yield User_1.User.exists({ email: req.body.user.email })) {
         res.json({ status: 'error', message: 'User already exists' });
         return;
     }
     else {
         try {
-            yield bcrypt.hash(req.body.password, 10, (err, hash) => {
+            yield bcrypt.hash(req.body.user.password, 10, (err, hash) => {
                 if (err) {
                     res.json({ status: 'error', message: 'Error hashing password' });
                     //throw(err);
@@ -64,9 +64,9 @@ app.post('/api/login', (req, res) => __awaiter(void 0, void 0, void 0, function*
     console.log(req.body);
     try {
         // console.log(User.findOne(req.body.email));
-        const user = yield User_1.User.findOne({ email: req.body.email });
+        const user = yield User_1.User.findOne({ email: req.body.user.email });
         // console.log(user)
-        const passwordsMatch = yield bcrypt.compare(req.body.password, user === null || user === void 0 ? void 0 : user.password);
+        const passwordsMatch = yield bcrypt.compare(req.body.user.password, user === null || user === void 0 ? void 0 : user.password);
         if (!passwordsMatch) {
             return res.status(401).json({ status: 'error', message: `Invalid email or password` });
         }
@@ -84,19 +84,34 @@ app.post('/api/login', (req, res) => __awaiter(void 0, void 0, void 0, function*
 }));
 // get endpoint for user's recipes
 app.get('/api/recipes', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("get");
+    // console.log("get");
     try {
-        const user = yield User_1.User.where("email").equals(req.body.email);
+        const user = yield User_1.User.where("email").equals(req.body.user.email);
         // console.log(user[0].recipes);
         res.status(200).json(user[0].recipes);
     }
     catch (e) {
-        console.log(e.message);
+        console.error(e);
+        res.status(400);
+    }
+}));
+// post endpoint for updating user's recipes
+app.post('/api/recipes', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("modify recipes");
+    console.log(req);
+    try {
+        yield (0, conn_1.updateRecipes)(req.body.user.email, req.body.recipes);
+        res.status(201);
+    }
+    catch (e) {
+        console.error(e);
+        res.status(400);
     }
 }));
 // middleware to authenticate token from the client, use in routes that require user to be logged in
 function authenticateToken(req, res, next) {
-    const authHeader = req.headers['authorization'];
+    console.log(req.body);
+    const authHeader = req.headers['authorization']; // format: Bearer {token}
     const token = authHeader && authHeader.split(' ')[1]; // check for authorization header, get token
     if (token == null) {
         return res.sendStatus(401);
@@ -106,7 +121,7 @@ function authenticateToken(req, res, next) {
             console.log("Authorization failed");
             return res.status(403);
         }
-        req.body = user;
+        req.body.user = user;
         next();
     });
 }

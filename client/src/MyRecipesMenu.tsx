@@ -40,11 +40,52 @@ const MyRecipesMenu:FC<any> = () => {
 
     // state tracking recipes in the form of objects
     const [recipes, setRecipes] = useState<Array<IRecipeBlock>>([]);
+    // state for tracking if Update
+    const [updateRecipesDisabled, setUpdateRecipesDisabled] = useState<boolean>(true);
 
     // get initial data
     useEffect( () => {
+        async function getRecipes() {
+            try {
+                const res = await fetch('http://localhost:8080/api/recipes', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
+                    },
+                })
+                if(!res.ok) {
+                    console.log("Failed to get recipes");
+                    return;
+                }
+        
+                const data = await res.json();
+                console.log(data);
+                
+                let newRecipes: Array<IRecipeBlock> = [];
+                data.forEach((item: any) => {
+                    newRecipes.push(
+                        {
+                            recipeName: item.name,
+                            calories: item.cals,
+                            protein: item.protein,
+                            carbs: item.carbs,
+                            fats: item.fat,
+                            isEditing: false,
+                            handleSave: handleSave,
+                            handleEdit: handleEdit,
+                            handleDelete: handleDelete,
+                        }
+                    )
+                })
+                setRecipes(newRecipes);
+            } catch (e) {
+                console.error(e);
+            }   
+        }
+
         getRecipes();
-    } , []);
+    }, []);
         // setRecipes([
         //     {
         //         recipeName: "Recipe 1",
@@ -58,41 +99,6 @@ const MyRecipesMenu:FC<any> = () => {
         //         handleDelete: handleDelete,
         //     }
         // ]
-
-    async function getRecipes() {
-        const res = await fetch('http://localhost:8080/api/recipes', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
-            },
-        })
-        if(!res.ok) {
-            console.log("Failed to get recipes");
-            return;
-        }
-
-        const data = await res.json();
-        console.log(data);
-        
-        let newRecipes: Array<IRecipeBlock> = [];
-        data.map((item: any) => {
-            newRecipes.push(
-                {
-                    recipeName: item.name,
-                    calories: item.cals,
-                    protein: item.protein,
-                    carbs: item.carbs,
-                    fats: item.fat,
-                    isEditing: false,
-                    handleSave: handleSave,
-                    handleEdit: handleEdit,
-                    handleDelete: handleDelete,
-                }
-            )
-        })
-        setRecipes(newRecipes);
-    }
 
     // turn list of objects to RecipeBlock components to render
     const convertToRecipeBlocks = () => recipes.map((recipe, i) => 
@@ -130,6 +136,7 @@ const MyRecipesMenu:FC<any> = () => {
         ]
         setRecipes(newRecipes);
         recipeBlockList = convertToRecipeBlocks();
+        setUpdateRecipesDisabled(true);
     }
 
     // get the index of a recipe from its name
@@ -165,6 +172,7 @@ const MyRecipesMenu:FC<any> = () => {
         recipesToEdit[recipeInd] = newRecipe;
         setRecipes(recipesToEdit);
         recipeBlockList = convertToRecipeBlocks();
+        setUpdateRecipesDisabled(true);
     }
 
     // handle delete button click
@@ -197,6 +205,50 @@ const MyRecipesMenu:FC<any> = () => {
         recipesToEdit[recipeInd] = newRecipe;
         setRecipes(recipesToEdit);
         recipeBlockList = convertToRecipeBlocks();
+        setUpdateRecipesDisabled(checkRecipesEditingStatus(recipesToEdit));
+    }
+
+    function checkRecipesEditingStatus(arr: Array<IRecipeBlock>) {
+        for (let i = 0; i < arr.length; i++) {
+            if(arr[i].isEditing === true) {
+                console.log("editing");
+                return true;
+            }
+        }
+        console.log("not editing");
+        return false;
+    }
+
+    async function handleUpdateRecipes() {
+        try {
+            // convert recipes state to objects sent to the backend
+            let recipesReq: Array<any> = [];
+            recipes.forEach((recipe) => {
+                recipesReq.push({
+                    name: recipe.recipeName,
+                    cals: recipe.calories,
+                    protein: recipe.protein,
+                    carbs: recipe.carbs,
+                    fat: recipe.fats,
+                })
+            });
+
+            // send post req to backend
+            const res = await fetch('http://localhost:8080/api/recipes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
+                },
+                body: JSON.stringify({"recipes": recipesReq}),
+            })
+            if(!res.ok) {
+                console.log("Failed to update recipes");
+                return;
+            }
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     return(
@@ -205,7 +257,10 @@ const MyRecipesMenu:FC<any> = () => {
 
             {recipeBlockList}
 
-            <button onClick={handleNewRecipe}>New Recipe</button>
+            <div className="flex gap-5 justify-center">
+                <button onClick={handleNewRecipe}>New Recipe</button>
+                <button onClick={handleUpdateRecipes} disabled={updateRecipesDisabled}>Update Recipes</button>
+            </div>
         </div>
     );
 }

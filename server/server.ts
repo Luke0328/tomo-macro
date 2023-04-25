@@ -10,7 +10,7 @@ const port = process.env.PORT || 8080;
 app.use(cors());
 app.use(express.json());
 
-import { connectToDb } from "./db/conn";
+import { connectToDb, updateRecipes } from "./db/conn";
 
 connectToDb().catch(console.dir);
 
@@ -19,13 +19,13 @@ app.get("/", (req, res) => {
 })
  
 app.post('/api/register', async (req, res) => {
-  if(await User.exists({email: req.body.email})){
+  if(await User.exists({email: req.body.user.email})){
     res.json({status:'error', message: 'User already exists'});
     return;
   }
   else{
     try{
-      await bcrypt.hash(req.body.password, 10, (err: Error, hash: string) => {
+      await bcrypt.hash(req.body.user.password, 10, (err: Error, hash: string) => {
           if (err) {
             res.json({status: 'error', message: 'Error hashing password'});
             //throw(err);
@@ -55,9 +55,9 @@ app.post('/api/login', async (req, res) => {
   console.log(req.body);
   try {
     // console.log(User.findOne(req.body.email));
-    const user = await User.findOne({ email: req.body.email });
+    const user = await User.findOne({ email: req.body.user.email });
     // console.log(user)
-    const passwordsMatch = await bcrypt.compare(req.body.password, user?.password);
+    const passwordsMatch = await bcrypt.compare(req.body.user.password, user?.password);
 
     if (!passwordsMatch) {
       return res.status(401).json({status: 'error', message: `Invalid email or password`});
@@ -76,19 +76,34 @@ app.post('/api/login', async (req, res) => {
 
 // get endpoint for user's recipes
 app.get('/api/recipes', authenticateToken, async (req, res) => {
-	console.log("get");
+	// console.log("get");
 	try {
-		const user: any = await User.where("email").equals(req.body.email);
+		const user: any = await User.where("email").equals(req.body.user.email);
 		// console.log(user[0].recipes);
 		res.status(200).json(user[0].recipes);
 	} catch (e: any) {
-		console.log(e.message);
+		console.error(e);
+		res.status(400);
 	}
 });
 
+// post endpoint for updating user's recipes
+app.post('/api/recipes', authenticateToken, async (req, res) => {
+	console.log("modify recipes");
+	console.log(req);
+	try {
+		await updateRecipes(req.body.user.email, req.body.recipes);
+		res.status(201);
+	} catch (e: any) {
+		console.error(e);
+		res.status(400);
+	}
+})
+
 // middleware to authenticate token from the client, use in routes that require user to be logged in
 function authenticateToken(req: any, res: any, next: any) {
-  const authHeader = req.headers['authorization'];
+	// console.log(req.body);
+  const authHeader = req.headers['authorization']; // format: Bearer {token}
   const token = authHeader && authHeader.split(' ')[1]; // check for authorization header, get token
   if(token == null) {
 	return res.sendStatus(401);
@@ -99,7 +114,7 @@ function authenticateToken(req: any, res: any, next: any) {
 		console.log("Authorization failed");
 		return res.status(403);
 	}
-	req.body = user;
+	req.body.user = user;
 	next();
   })
 }
@@ -107,6 +122,5 @@ function authenticateToken(req: any, res: any, next: any) {
 app.listen(port, () => {
   // connect to db when server starts
   // connectToDb().catch(console.dir);
-
   console.log(`Server is running on port: ${port}`);
 });
