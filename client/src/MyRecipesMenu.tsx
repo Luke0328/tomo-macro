@@ -211,11 +211,9 @@ const MyRecipesMenu:FC<any> = () => {
     function checkRecipesEditingStatus(arr: Array<IRecipeBlock>) {
         for (let i = 0; i < arr.length; i++) {
             if(arr[i].isEditing === true) {
-                console.log("editing");
                 return true;
             }
         }
-        console.log("not editing");
         return false;
     }
 
