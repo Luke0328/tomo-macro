@@ -16,7 +16,7 @@ function App() {
     if(location.pathname == '/' || location.pathname == '/Register'){
       setBackground('LoginAndRegistration');
     } else if(location.pathname == '/Home'){
-      setBackground('bg-orange-400');
+      setBackground('LoginAndRegistration');
     }
   }, [location.pathname])
 

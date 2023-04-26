@@ -257,4 +257,4 @@ const MealsBlockContainer = () => {
 
 
 
-export default MealsBlockContainer
+export default MealsBlockContainer;
