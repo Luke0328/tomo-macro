@@ -250,7 +250,7 @@ const MyRecipesMenu:FC<any> = () => {
     }
 
     return(
-        <div className="border flex flex-col gap-5 p-3">
+        <div className="border-r-2 flex flex-col gap-5 p-3 h-full">
             <h1 className="font-bold">My Recipes:</h1>
 
             {recipeBlockList}

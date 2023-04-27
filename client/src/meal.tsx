@@ -150,8 +150,8 @@ const FoodList = ({ foods, onDeleteFood }: { foods: IFood[]; onDeleteFood: (inde
               <span>Name: {food.foodName}</span>
               <span>Calories: {food.calories}</span>
               <span>Protein: {food.protein}</span>
-              <span>Carbs: {food.carbs}</span>
               <span>Fat: {food.fat}</span>
+              <span>Carbs: {food.carbs}</span>
               <button onClick={() => onDeleteFood(index)}>Delete</button>
             </li>
           ))}
@@ -187,7 +187,7 @@ const MealsContainer = (props: {handleMacroUpdate: (calories: number, protein: n
     // }
     
       return (
-        <div>
+        <div className="flex flex-col h-full w-full p-2">
             {meals.map((meal) => {
                 return <div key={meal.key}>{meal}</div>
             })}
@@ -204,13 +204,13 @@ const MealsContainer = (props: {handleMacroUpdate: (calories: number, protein: n
 // the state should be kept here
 const MacroFooter:FC<IMacroFooter> = ({ calories, protein, fat, carbs }) => {
     return (
-        <div className="flex">
+        <div className="flex h-10 justify-around w-full">
             <div>Calories: {calories}</div>
-            <div className="flex flex-col">
+            {/* <div className="flex"> */}
                 <div>Protein: {protein}</div>
                 <div>Fat: {fat}</div>
                 <div>Carbs: {carbs}</div>
-            </div>
+            {/* </div> */}
         </div>
     );
 }
@@ -242,14 +242,14 @@ const MealsBlockContainer = () => {
     }
 
     return (
-        <div>
-        <MealsContainer handleMacroUpdate={handleMacroUpdate}/>
-        <MacroFooter
-            calories={totalCalories}
-            protein={totalProtein}
-            fat={totalFat}
-            carbs={totalCarbs}
-        />
+        <div className="flex flex-col w-full h-full">
+            <MealsContainer handleMacroUpdate={handleMacroUpdate}/>
+            <MacroFooter
+                calories={totalCalories}
+                protein={totalProtein}
+                fat={totalFat}
+                carbs={totalCarbs}
+            />
         </div>
     );
 }
