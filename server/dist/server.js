@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const User_1 = require("./db/User");
 const app = (0, express_1.default)();
 const cors = require("cors");
 const bcrypt = require("bcrypt");
@@ -28,30 +27,26 @@ app.get("/", (req, res) => {
     res.send("HELLO");
 });
 app.post('/api/register', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    if (yield User_1.User.exists({ email: req.body.user.email })) {
+    console.log(req.body);
+    if (yield (0, conn_1.checkForUser)(req.body.email)) {
         res.json({ status: 'error', message: 'User already exists' });
         return;
     }
     else {
         try {
-            yield bcrypt.hash(req.body.user.password, 10, (err, hash) => {
+            yield bcrypt.hash(req.body.password, 10, (err, hash) => {
                 if (err) {
-                    res.json({ status: 'error', message: 'Error hashing password' });
+                    res.status(424).json({ status: 'error', message: 'Error hashing password' });
                     //throw(err);
                 }
                 else {
-                    User_1.User.create({
-                        firstName: req.body.firstName,
-                        lastName: req.body.lastName,
-                        email: req.body.email,
-                        password: hash,
-                    });
-                    res.json({ status: 'ok' });
+                    (0, conn_1.createUser)(req.body.firstName, req.body.lastName, req.body.email, hash);
+                    res.status(201).json({ status: 'ok' });
                 }
             });
         }
         catch (err) {
-            res.json({ status: 'error', message: 'Error registering user' });
+            res.status(424).json({ status: 'error', message: 'Error registering user' });
         }
     }
 }));
@@ -61,12 +56,10 @@ app.post('/api/register', (req, res) => __awaiter(void 0, void 0, void 0, functi
 // 	res.json("SUCCESS");
 // })
 app.post('/api/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(req.body);
     try {
         // console.log(User.findOne(req.body.email));
-        const user = yield User_1.User.findOne({ email: req.body.user.email });
-        // console.log(user)
-        const passwordsMatch = yield bcrypt.compare(req.body.user.password, user === null || user === void 0 ? void 0 : user.password);
+        const user = yield (0, conn_1.findUser)(req.body.email);
+        const passwordsMatch = yield bcrypt.compare(req.body.password, user === null || user === void 0 ? void 0 : user.password);
         if (!passwordsMatch) {
             return res.status(401).json({ status: 'error', message: `Invalid email or password` });
         }
@@ -86,8 +79,7 @@ app.post('/api/login', (req, res) => __awaiter(void 0, void 0, void 0, function*
 app.get('/api/recipes', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // console.log("get");
     try {
-        const user = yield User_1.User.where("email").equals(req.body.user.email);
-        // console.log(user[0].recipes);
+        const user = yield (0, conn_1.findUser)(req.body.user.email);
         res.status(200).json(user[0].recipes);
     }
     catch (e) {
@@ -110,7 +102,7 @@ app.post('/api/recipes', authenticateToken, (req, res) => __awaiter(void 0, void
 }));
 // middleware to authenticate token from the client, use in routes that require user to be logged in
 function authenticateToken(req, res, next) {
-    console.log(req.body);
+    // console.log(req.body);
     const authHeader = req.headers['authorization']; // format: Bearer {token}
     const token = authHeader && authHeader.split(' ')[1]; // check for authorization header, get token
     if (token == null) {

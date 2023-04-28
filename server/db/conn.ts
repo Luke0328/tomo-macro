@@ -4,6 +4,8 @@ import { User } from "./User";
 
 const db_uri = process.env.ATLAS_URI;
 
+// Facade Pattern - simpler interface for performing actions on the database
+
 // connect to mongodb
 async function connectToDb() {
 	// console.log(db_uri);
@@ -23,11 +25,25 @@ async function checkForUser(email: string) {
 	return true;
 }
 
-// create new user
-async function createUser(email: string, pwd: string) {
+// find user
+async function findUser(email: string) {
 	try {
-		const newUser = await User.create({ email: email, password: pwd });
-		console.log(newUser);
+		const user = await User.findOne({ email: email });
+		return user;
+	} catch (e) {
+		throw e;
+	}
+}
+
+// create new user
+async function createUser(firstName: string, lastName: string, email: string, pwd: string) {
+	try {
+		await User.create({
+			firstName: firstName,
+			lastName: lastName,
+			email: email,
+			password: pwd,
+		})
 	} catch (e: any) {
 		throw e;
 	}
@@ -66,4 +82,4 @@ async function updateRecipes(email: string, recipes: Array<IRecipe>) {
 // edit meal on date
 // delete meal from date
 
-export { connectToDb, updateRecipes };
+export { connectToDb, checkForUser, findUser, createUser, updateRecipes };

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom'
-import logo from './logo.svg';
 import './App.css';
 import Login  from "./loginPage";
 import Register from "./registrationPage";
@@ -13,9 +12,9 @@ function App() {
   const location = useLocation();
 
   useEffect(() => {
-    if(location.pathname == '/' || location.pathname == '/Register'){
+    if(location.pathname === '/' || location.pathname === '/Register'){
       setBackground('LoginAndRegistration');
-    } else if(location.pathname == '/Home'){
+    } else if(location.pathname === '/Home'){
       setBackground('LoginAndRegistration');
     }
   }, [location.pathname])

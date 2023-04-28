@@ -9,10 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateRecipes = exports.connectToDb = void 0;
+exports.updateRecipes = exports.createUser = exports.findUser = exports.checkForUser = exports.connectToDb = void 0;
 const mongoose_1 = require("mongoose");
 const User_1 = require("./User");
 const db_uri = process.env.ATLAS_URI;
+// Facade Pattern - simpler interface for performing actions on the database
 // connect to mongodb
 function connectToDb() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -35,18 +36,37 @@ function checkForUser(email) {
         return true;
     });
 }
-// create new user
-function createUser(email, pwd) {
+exports.checkForUser = checkForUser;
+// find user
+function findUser(email) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const newUser = yield User_1.User.create({ email: email, password: pwd });
-            console.log(newUser);
+            const user = yield User_1.User.findOne({ email: email });
+            return user;
         }
         catch (e) {
             throw e;
         }
     });
 }
+exports.findUser = findUser;
+// create new user
+function createUser(firstName, lastName, email, pwd) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            yield User_1.User.create({
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                password: pwd,
+            });
+        }
+        catch (e) {
+            throw e;
+        }
+    });
+}
+exports.createUser = createUser;
 // add new recipe to user
 function addRecipe(email, recipe) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -54,7 +74,7 @@ function addRecipe(email, recipe) {
             const user = yield User_1.User.where("email").equals(email);
             user[0].recipes.push(recipe);
             yield user[0].save();
-            console.log(user);
+            // console.log(user);
         }
         catch (e) {
             throw e;
@@ -71,7 +91,7 @@ function updateRecipes(email, recipes) {
                 user[0].recipes.push(recipe);
             });
             yield user[0].save();
-            console.log(user);
+            // console.log(user);
         }
         catch (e) {
             throw e;
