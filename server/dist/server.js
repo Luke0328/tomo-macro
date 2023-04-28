@@ -23,18 +23,20 @@ const port = process.env.PORT || 8080;
 app.use(cors());
 app.use(express_1.default.json());
 const conn_1 = require("./db/conn");
-(0, conn_1.connectToDb)().catch(console.dir);
+const MongoConnect_1 = __importDefault(require("./db/MongoConnect"));
+const mongoConnection = MongoConnect_1.default.getInstance();
+mongoConnection.connectToDb().catch(console.dir);
 app.get("/", (req, res) => {
     res.send("HELLO");
 });
 app.post('/api/register', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    if (yield User_1.User.exists({ email: req.body.user.email })) {
+    if (yield User_1.User.exists({ email: req.body.email })) {
         res.json({ status: 'error', message: 'User already exists' });
         return;
     }
     else {
         try {
-            yield bcrypt.hash(req.body.user.password, 10, (err, hash) => {
+            yield bcrypt.hash(req.body.password, 10, (err, hash) => {
                 if (err) {
                     res.json({ status: 'error', message: 'Error hashing password' });
                     //throw(err);
@@ -62,11 +64,14 @@ app.post('/api/register', (req, res) => __awaiter(void 0, void 0, void 0, functi
 // })
 app.post('/api/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(req.body);
+    console.log(req.body.user);
     try {
         // console.log(User.findOne(req.body.email));
-        const user = yield User_1.User.findOne({ email: req.body.user.email });
+        console.log('checking user email: ' + req.body.email);
+        const user = yield User_1.User.findOne({ email: req.body.email });
         // console.log(user)
-        const passwordsMatch = yield bcrypt.compare(req.body.user.password, user === null || user === void 0 ? void 0 : user.password);
+        const passwordsMatch = yield bcrypt.compare(req.body.password, user === null || user === void 0 ? void 0 : user.password);
+        console.log('checking user password: ' + (user === null || user === void 0 ? void 0 : user.password));
         if (!passwordsMatch) {
             return res.status(401).json({ status: 'error', message: `Invalid email or password` });
         }
@@ -110,7 +115,7 @@ app.post('/api/recipes', authenticateToken, (req, res) => __awaiter(void 0, void
 }));
 // middleware to authenticate token from the client, use in routes that require user to be logged in
 function authenticateToken(req, res, next) {
-    console.log(req.body);
+    // console.log(req.body);
     const authHeader = req.headers['authorization']; // format: Bearer {token}
     const token = authHeader && authHeader.split(' ')[1]; // check for authorization header, get token
     if (token == null) {

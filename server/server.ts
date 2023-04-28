@@ -10,22 +10,25 @@ const port = process.env.PORT || 8080;
 app.use(cors());
 app.use(express.json());
 
-import { connectToDb, updateRecipes } from "./db/conn";
+import { updateRecipes } from "./db/conn";
+import MongoConnection from "./db/MongoConnect"
 
-connectToDb().catch(console.dir);
+const mongoConnection = MongoConnection.getInstance();
+mongoConnection.connectToDb().catch(console.dir);
+
 
 app.get("/", (req, res) => {
     res.send("HELLO");
 })
  
 app.post('/api/register', async (req, res) => {
-  if(await User.exists({email: req.body.user.email})){
+  if(await User.exists({email: req.body.email})){
     res.json({status:'error', message: 'User already exists'});
     return;
   }
   else{
     try{
-      await bcrypt.hash(req.body.user.password, 10, (err: Error, hash: string) => {
+      await bcrypt.hash(req.body.password, 10, (err: Error, hash: string) => {
           if (err) {
             res.json({status: 'error', message: 'Error hashing password'});
             //throw(err);
@@ -52,12 +55,15 @@ app.post('/api/register', async (req, res) => {
 // })
 
 app.post('/api/login', async (req, res) => {
+  console.log(req.body);
+  console.log(req.body.user);
   try {
     // console.log(User.findOne(req.body.email));
-    const user = await User.findOne({ email: req.body.user.email });
+    console.log('checking user email: ' + req.body.email);
+    const user = await User.findOne({ email: req.body.email });
     // console.log(user)
-    const passwordsMatch = await bcrypt.compare(req.body.user.password, user?.password);
-
+    const passwordsMatch = await bcrypt.compare(req.body.password, user?.password);
+    console.log('checking user password: ' + user?.password);
     if (!passwordsMatch) {
       return res.status(401).json({status: 'error', message: `Invalid email or password`});
     } else {

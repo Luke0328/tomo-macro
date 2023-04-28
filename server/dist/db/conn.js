@@ -9,22 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateRecipes = exports.connectToDb = void 0;
-const mongoose_1 = require("mongoose");
+exports.updateRecipes = void 0;
 const User_1 = require("./User");
-const db_uri = process.env.ATLAS_URI;
-// connect to mongodb
-function connectToDb() {
-    return __awaiter(this, void 0, void 0, function* () {
-        // console.log(db_uri);
-        yield (0, mongoose_1.connect)(`${db_uri}`)
-            .then(() => console.log(`Connected to Mongodb on ${db_uri}`));
-        // addRecipe("luke@gmail.com", {name: "Pasta", cals: 500, protein: 30, carbs: 40, fat: 12});
-        // addRecipe("luke@gmail.com", {name: "Sandwich", cals: 550, protein: 25, carbs: 45, fat: 16});
-        // updateRecipes("luke@gmail.com", [{name: "Pasta", cals: 500, protein: 30, carbs: 40, fat: 12}, {name: "Sandwich", cals: 550, protein: 25, carbs: 45, fat: 16}]);
-    });
-}
-exports.connectToDb = connectToDb;
 // check if user exists (for logging in)
 function checkForUser(email) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -54,7 +40,7 @@ function addRecipe(email, recipe) {
             const user = yield User_1.User.where("email").equals(email);
             user[0].recipes.push(recipe);
             yield user[0].save();
-            console.log(user);
+            // console.log(user);
         }
         catch (e) {
             throw e;
@@ -71,7 +57,7 @@ function updateRecipes(email, recipes) {
                 user[0].recipes.push(recipe);
             });
             yield user[0].save();
-            console.log(user);
+            // console.log(user);
         }
         catch (e) {
             throw e;
