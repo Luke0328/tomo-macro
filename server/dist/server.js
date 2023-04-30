@@ -21,14 +21,14 @@ require("dotenv").config({ path: "./config.env" });
 const port = process.env.PORT || 8080;
 app.use(cors());
 app.use(express_1.default.json());
-const conn_1 = require("./db/conn");
-(0, conn_1.connectToDb)().catch(console.dir);
+const conn_1 = __importDefault(require("./db/conn"));
+conn_1.default.connectToDb().catch(console.dir);
 app.get("/", (req, res) => {
     res.send("HELLO");
 });
 app.post('/api/register', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(req.body);
-    if (yield (0, conn_1.checkForUser)(req.body.email)) {
+    if (yield conn_1.default.checkForUser(req.body.email)) {
         res.json({ status: 'error', message: 'User already exists' });
         return;
     }
@@ -40,7 +40,7 @@ app.post('/api/register', (req, res) => __awaiter(void 0, void 0, void 0, functi
                     //throw(err);
                 }
                 else {
-                    (0, conn_1.createUser)(req.body.firstName, req.body.lastName, req.body.email, hash);
+                    conn_1.default.createUser(req.body.firstName, req.body.lastName, req.body.email, hash);
                     res.status(201).json({ status: 'ok' });
                 }
             });
@@ -57,8 +57,7 @@ app.post('/api/register', (req, res) => __awaiter(void 0, void 0, void 0, functi
 // })
 app.post('/api/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // console.log(User.findOne(req.body.email));
-        const user = yield (0, conn_1.findUser)(req.body.email);
+        const user = yield conn_1.default.findUser(req.body.email);
         const passwordsMatch = yield bcrypt.compare(req.body.password, user === null || user === void 0 ? void 0 : user.password);
         if (!passwordsMatch) {
             return res.status(401).json({ status: 'error', message: `Invalid email or password` });
@@ -72,15 +71,16 @@ app.post('/api/login', (req, res) => __awaiter(void 0, void 0, void 0, function*
         return res.status(401).json({ status: 'error', message: `Invalid email or password` });
     }
     // serialize body as jwt
-    const accessToken = jsonwebtoken_1.default.sign(req.body, process.env.ACCESS_TOKEN_SECRET);
+    const accessToken = jsonwebtoken_1.default.sign(req.body, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '12h' });
     res.status(201).json({ status: 'ok', accessToken: accessToken });
 }));
 // get endpoint for user's recipes
 app.get('/api/recipes', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // console.log("get");
     try {
-        const user = yield (0, conn_1.findUser)(req.body.user.email);
-        res.status(200).json(user[0].recipes);
+        const user = yield conn_1.default.findUser(req.body.user.email);
+        console.log(user);
+        res.status(200).json(user.recipes);
     }
     catch (e) {
         console.error(e);
@@ -92,7 +92,7 @@ app.post('/api/recipes', authenticateToken, (req, res) => __awaiter(void 0, void
     console.log("modify recipes");
     console.log(req);
     try {
-        yield (0, conn_1.updateRecipes)(req.body.user.email, req.body.recipes);
+        yield conn_1.default.updateRecipes(req.body.user.email, req.body.recipes);
         res.status(201);
     }
     catch (e) {

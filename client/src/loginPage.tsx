@@ -32,8 +32,9 @@ const Login = () => {
         // console.log(data.accessToken);
 
         // store access token in local storage, add to headers for future get requests
+        console.log(data.accessToken);
         // NOTE: can implement logging out by clearing localStorage
-        localStorage.setItem("accessToken", JSON.stringify(data.accessToken));
+        localStorage.setItem("accessToken", data.accessToken);
     }
 
     const handleSwap = () => {

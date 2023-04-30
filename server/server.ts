@@ -10,17 +10,17 @@ const port = process.env.PORT || 8080;
 app.use(cors());
 app.use(express.json());
 
-import { connectToDb, checkForUser, findUser, createUser, updateRecipes } from "./db/conn";
+import DbFacade from "./db/conn";
 
-connectToDb().catch(console.dir);
+DbFacade.connectToDb().catch(console.dir);
 
 app.get("/", (req, res) => {
     res.send("HELLO");
 })
  
 app.post('/api/register', async (req, res) => {
-	console.log(req.body);
-  if(await checkForUser(req.body.email)) {
+	// console.log(req.body);
+  if(await DbFacade.checkForUser(req.body.email)) {
     res.json({status:'error', message: 'User already exists'});
     return;
   } else {
@@ -30,7 +30,7 @@ app.post('/api/register', async (req, res) => {
 					res.status(424).json({status: 'error', message: 'Error hashing password'});
 					//throw(err);
 				} else {
-					createUser(req.body.firstName, req.body.lastName, req.body.email, hash);
+					DbFacade.createUser(req.body.firstName, req.body.lastName, req.body.email, hash);
 					res.status(201).json({status: 'ok'});
 				}
 			});
@@ -48,7 +48,7 @@ app.post('/api/register', async (req, res) => {
 
 app.post('/api/login', async (req, res) => {
   try {
-    const user = await findUser(req.body.email);
+    const user = await DbFacade.findUser(req.body.email);
 	const passwordsMatch = await bcrypt.compare(req.body.password, user?.password);
 
     if (!passwordsMatch) {
@@ -62,7 +62,7 @@ app.post('/api/login', async (req, res) => {
   }
 
   // serialize body as jwt
-  const accessToken = jwt.sign(req.body, process.env.ACCESS_TOKEN_SECRET as string);
+  const accessToken = jwt.sign(req.body, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: '12h' });
   res.status(201).json( {status: 'ok', accessToken: accessToken} )
 })
 
@@ -70,8 +70,9 @@ app.post('/api/login', async (req, res) => {
 app.get('/api/recipes', authenticateToken, async (req, res) => {
 	// console.log("get");
 	try {
-		const user: any = await findUser(req.body.user.email);
-		res.status(200).json(user[0].recipes);
+		const user: any = await DbFacade.findUser(req.body.user.email);
+		// console.log(user);
+		res.status(200).json(user.recipes);
 	} catch (e: any) {
 		console.error(e);
 		res.status(400);
@@ -81,9 +82,9 @@ app.get('/api/recipes', authenticateToken, async (req, res) => {
 // post endpoint for updating user's recipes
 app.post('/api/recipes', authenticateToken, async (req, res) => {
 	console.log("modify recipes");
-	console.log(req);
+	// console.log(req);
 	try {
-		await updateRecipes(req.body.user.email, req.body.recipes);
+		await DbFacade.updateRecipes(req.body.user.email, req.body.recipes);
 		res.status(201);
 	} catch (e: any) {
 		console.error(e);
