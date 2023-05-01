@@ -15,17 +15,15 @@ const db_uri = process.env.ATLAS_URI;
 // Facade Pattern - simpler interface for performing actions on the database
 class DbFacade {
     constructor() { }
-    // connect to mongodb
-    static connectToDb() {
-        return __awaiter(this, void 0, void 0, function* () {
-            // console.log(db_uri);
-            yield (0, mongoose_1.connect)(`${db_uri}`)
-                .then(() => console.log(`Connected to Mongodb on ${db_uri}`));
-            // addRecipe("luke@gmail.com", {name: "Pasta", cals: 500, protein: 30, carbs: 40, fat: 12});
-            // addRecipe("luke@gmail.com", {name: "Sandwich", cals: 550, protein: 25, carbs: 45, fat: 16});
-            // updateRecipes("luke@gmail.com", [{name: "Pasta", cals: 500, protein: 30, carbs: 40, fat: 12}, {name: "Sandwich", cals: 550, protein: 25, carbs: 45, fat: 16}]);
-        });
-    }
+    // // connect to mongodb
+    // static async connectToDb() {
+    // 	// console.log(db_uri);
+    // 	await connect(`${db_uri}`)
+    // 		.then(() => console.log(`Connected to Mongodb on ${db_uri}`));
+    // 	// addRecipe("luke@gmail.com", {name: "Pasta", cals: 500, protein: 30, carbs: 40, fat: 12});
+    // 	// addRecipe("luke@gmail.com", {name: "Sandwich", cals: 550, protein: 25, carbs: 45, fat: 16});
+    // 	// updateRecipes("luke@gmail.com", [{name: "Pasta", cals: 500, protein: 30, carbs: 40, fat: 12}, {name: "Sandwich", cals: 550, protein: 25, carbs: 45, fat: 16}]);
+    // }
     // check if user exists (for logging in)
     static checkForUser(email) {
         return __awaiter(this, void 0, void 0, function* () {

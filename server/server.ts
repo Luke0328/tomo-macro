@@ -10,9 +10,13 @@ const port = process.env.PORT || 8080;
 app.use(cors());
 app.use(express.json());
 
+import { updateRecipes } from "./db/conn";
+import MongoConnection from "./db/MongoConnect"
+
+const mongoConnection = MongoConnection.getInstance();
+mongoConnection.connectToDb().catch(console.dir);
 import DbFacade from "./db/conn";
 
-DbFacade.connectToDb().catch(console.dir);
 
 app.get("/", (req, res) => {
     res.send("HELLO");
@@ -47,6 +51,8 @@ app.post('/api/register', async (req, res) => {
 // })
 
 app.post('/api/login', async (req, res) => {
+  console.log(req.body);
+  console.log(req.body.user);
   try {
     const user = await DbFacade.findUser(req.body.email);
 	const passwordsMatch = await bcrypt.compare(req.body.password, user?.password);
