@@ -22,9 +22,9 @@ const port = process.env.PORT || 8080;
 app.use(cors());
 app.use(express_1.default.json());
 const MongoConnect_1 = __importDefault(require("./db/MongoConnect"));
+const conn_1 = __importDefault(require("./db/conn"));
 const mongoConnection = MongoConnect_1.default.getInstance();
 mongoConnection.connectToDb().catch(console.dir);
-const conn_1 = __importDefault(require("./db/conn"));
 app.get("/", (req, res) => {
     res.send("HELLO");
 });
@@ -58,7 +58,6 @@ app.post('/api/register', (req, res) => __awaiter(void 0, void 0, void 0, functi
 // 	res.json("SUCCESS");
 // })
 app.post('/api/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(req.body);
     try {
         const user = yield conn_1.default.findUser(req.body.email);
         const passwordsMatch = yield bcrypt.compare(req.body.password, user === null || user === void 0 ? void 0 : user.password);
@@ -105,7 +104,7 @@ app.post('/api/recipes', authenticateToken, (req, res) => __awaiter(void 0, void
 }));
 // middleware to authenticate token from the client, use in routes that require user to be logged in
 function authenticateToken(req, res, next) {
-    console.log(req.body);
+    // console.log(req.body);
     const authHeader = req.headers['authorization']; // format: Bearer {token}
     const token = authHeader && authHeader.split(' ')[1]; // check for authorization header, get token
     if (token == null) {

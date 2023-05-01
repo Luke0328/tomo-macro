@@ -1,6 +1,5 @@
 import express, {Express, Request, Response} from "express";
 import jwt from "jsonwebtoken";
-import { User } from "./db/User"
 
 const app = express();
 const cors = require("cors");
@@ -10,12 +9,12 @@ const port = process.env.PORT || 8080;
 app.use(cors());
 app.use(express.json());
 
-import { updateRecipes } from "./db/conn";
 import MongoConnection from "./db/MongoConnect"
+import DbFacade from "./db/conn";
+
 
 const mongoConnection = MongoConnection.getInstance();
 mongoConnection.connectToDb().catch(console.dir);
-import DbFacade from "./db/conn";
 
 
 app.get("/", (req, res) => {
@@ -51,8 +50,6 @@ app.post('/api/register', async (req, res) => {
 // })
 
 app.post('/api/login', async (req, res) => {
-  console.log(req.body);
-  console.log(req.body.user);
   try {
     const user = await DbFacade.findUser(req.body.email);
 	const passwordsMatch = await bcrypt.compare(req.body.password, user?.password);

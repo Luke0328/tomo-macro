@@ -9,7 +9,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = require("mongoose");
 const User_1 = require("./User");
 const db_uri = process.env.ATLAS_URI;
 // Facade Pattern - simpler interface for performing actions on the database
