@@ -1,4 +1,5 @@
 // import {connect } from "mongoose";
+import { IDateData } from "./DateData";
 import { IRecipe } from "./Recipe";
 import { User } from "./User";
 
@@ -64,7 +65,7 @@ class DbFacade {
 		}
 	}
 
-	// modify recipes from user
+	// modify recipes on user
 	static async updateRecipes(email: string, recipes: Array<IRecipe>) {
 		try {
 			const user: any = await User.where("email").equals(email);
@@ -75,15 +76,25 @@ class DbFacade {
 			await user[0].save();
 			// console.log(user);
 		} catch (e: any) {
-			throw e
+			throw e;
 		}
 	}
 
-	// get data associated with date
+	// modify dateData on user
+	static async updateDateDate(email: string, dateData: Array<IDateData>) {
+		try {
+			const user: any = await User.where("email").equals(email);
+			user[0].dataByDate = [];
+			dateData.forEach((dateDateItem) => {
+				user[0].dataByDate.push(dateDateItem);
+			});
+			console.log(user);
+			await user[0].save();
+		} catch (e) {
+			throw e;
+		}
+	}
 
-	// add meal to date
-	// edit meal on date
-	// delete meal from date
 }
 
 export default DbFacade;

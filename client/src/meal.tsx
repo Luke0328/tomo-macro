@@ -27,9 +27,9 @@ const Food:FC<IFood> = ({ foodName, calories, protein, fat, carbs }) => {
             <div className="w-full">{foodName}</div>
             <div className="flex flex-col w-full">
                 <div className="flex">
-                    <div className="bg-red-400">{protein}</div>
-                    <div className="bg-yellow-200">{fat}</div>
-                    <div className="bg-green-400">{carbs}</div>
+                    <div className="bg-red-400">Protein: {protein}</div>
+                    <div className="bg-green-400">Carbs: {carbs}</div>
+                    <div className="bg-yellow-200">Fat: {fat}</div>
                 </div>
                 <div className="bg-blue-400">{calories}</div>
             </div>
@@ -43,30 +43,47 @@ const Food:FC<IFood> = ({ foodName, calories, protein, fat, carbs }) => {
 // the food added can be brand new or something that exists already in the user's recipes
 // should be able to edit what foods were in the meal and delete foods from a meal
 // the Meal component 
-const Meal = (props: { handleMacroUpdate: (calories: number, protein: number, fat: number, carbs: number) => void, mealNumber: number}) => {
-    const[mealFoods, setMealFoods] = useState<IFood[]>([]);
+const Meal = (props: { handleMacroUpdate: (calories: number, protein: number, fat: number, carbs: number) => void, mealNumber: number, initialFoods?: IFood}) => {
 
-    const addFoodToMeal = (food: IFood) => {
-        setMealFoods([...mealFoods,food]);
-        props.handleMacroUpdate(food.calories,food.protein,food.fat,food.carbs)
-        // mealFoods.map((meal) => props.handleMacroUpdate(meal.calories,meal.protein,meal.carbs,meal.fat))
+  const [mealFoods, setMealFoods] = useState<Array<IFood>>([]);
+
+  useEffect(() => {
+    console.log("test");
+    if (props.initialFoods === undefined) {
+      return;
     }
+    else {
+      setMealFoods([props.initialFoods]);
+      props.handleMacroUpdate(props.initialFoods.calories,props.initialFoods.protein,props.initialFoods.fat,props.initialFoods.carbs);
+    }
+  }, [])
 
-    const deleteFoodFromMeal = (index: number) => {
-        const newMealFoods = [...mealFoods];
-        const deletedFood = mealFoods[index];
-        // props.handleMacroUpdate(-1 * deletedFood.calories, -1 * deletedFood.protein, -1 * deletedFood.fat,-1 * deletedFood.carbs);
-        newMealFoods.splice(index, 1);
-        setMealFoods(newMealFoods);
-        props.handleMacroUpdate(-1 * deletedFood.calories, -1 * deletedFood.protein, -1 * deletedFood.fat,-1 * deletedFood.carbs);
-        // mealFoods.map((meal) => props.handleMacroUpdate(meal.calories,meal.protein,meal.fat,meal.carbs))
-    };
+  const addFoodToMeal = (food?: IFood) => {
+    if (food === undefined) {
+      return;
+    }
+    else {
+      setMealFoods([...mealFoods,food]);
+      props.handleMacroUpdate(food.calories,food.protein,food.fat,food.carbs);
+    }
+    // mealFoods.map((meal) => props.handleMacroUpdate(meal.calories,meal.protein,meal.carbs,meal.fat))
+  }
+
+  const deleteFoodFromMeal = (index: number) => {
+    const newMealFoods = [...mealFoods];
+    const deletedFood = mealFoods[index];
+    // props.handleMacroUpdate(-1 * deletedFood.calories, -1 * deletedFood.protein, -1 * deletedFood.fat,-1 * deletedFood.carbs);
+    newMealFoods.splice(index, 1);
+    setMealFoods(newMealFoods);
+    props.handleMacroUpdate(-1 * deletedFood.calories, -1 * deletedFood.protein, -1 * deletedFood.fat,-1 * deletedFood.carbs);
+    // mealFoods.map((meal) => props.handleMacroUpdate(meal.calories,meal.protein,meal.fat,meal.carbs))
+  };
 
     return (
         <div>
             <h2>Meal {props.mealNumber}</h2>
             <FoodList foods={mealFoods} onDeleteFood={deleteFoodFromMeal} />
-            <AddFoodButton handleMacroUpdate={props.handleMacroUpdate} addFoodToMeal={addFoodToMeal}/>
+            <AddFoodButton addFoodToMeal={addFoodToMeal}/>
         </div>
     );
 }
@@ -74,7 +91,6 @@ const Meal = (props: { handleMacroUpdate: (calories: number, protein: number, fa
 
 const AddFoodButton = (
     props: {
-        handleMacroUpdate: (calories: number, protein: number, carbs: number, fat: number) => void,
         addFoodToMeal: (food: IFood) => void,
     }) => {
     const [showAddFoodForm, setShowAddFoodForm] = useState(false);
@@ -100,7 +116,6 @@ const AddFoodButton = (
         carbs: carbs,})
       setShowAddFoodForm(false);
     };
-
   
     return (
       <div>
@@ -132,7 +147,7 @@ const AddFoodButton = (
               <input type="number" name="fat" />
             </label>
             <br />
-            <button type="submit" form="addFoodForm">Add Food</button>
+            <button type="submit" form="addFoodForm">Save Food</button>
           </form>
         )}
       </div>
@@ -169,14 +184,7 @@ const AddMealButton = (props: {addMeal: () => void}) => {
     )
 }
 
-const MealsContainer = (props: {handleMacroUpdate: (calories: number, protein: number, carbs: number, fat: number) => void}) => {
-    const [meals, setMeals] = useState<Array<JSX.Element>>([]);
-
-    const addMeal = () => {
-        const mealComponent = <Meal handleMacroUpdate={props.handleMacroUpdate} key={meals.length} mealNumber={meals.length+1}/>;
-        setMeals([...meals, mealComponent]);
-    }
-
+const MealsContainer = (props: {meals: any, addMeal: () => void, handleMacroUpdate: (calories: number, protein: number, carbs: number, fat: number) => void}) => {
     // const deleteMeal = (index: number) => {
     //     const newMeals = [...meals];
     //     const deletedMeal = meals[index];
@@ -188,16 +196,14 @@ const MealsContainer = (props: {handleMacroUpdate: (calories: number, protein: n
     
       return (
         <div className="flex flex-col h-full w-full p-2">
-            {meals.map((meal) => {
+            {props.meals.map((meal: any) => {
                 return <div key={meal.key}>{meal}</div>
             })}
-            <AddMealButton addMeal={addMeal} />
+            <AddMealButton addMeal={props.addMeal} />
         </div>
       );
     
 }
-
-
 
 // MACRO FOOTER
 // when foods are added/deleted, the day's macros should update
@@ -218,37 +224,85 @@ const MacroFooter:FC<IMacroFooter> = ({ calories, protein, fat, carbs }) => {
 
 // CONTAINER for the meals container and macrofooter to controll state
 const MealsBlockContainer = () => {
-    const [totalCalories, setTotalCalories] = useState<number>(0);
-    const [totalProtein, setTotalProtein] = useState<number>(0);
-    const [totalFat, setTotalFat] = useState<number>(0);
-    const [totalCarbs, setTotalCarbs] = useState<number>(0);
+    // const [totalCalories, setTotalCalories] = useState<number>(0);
+    // const [totalProtein, setTotalProtein] = useState<number>(0);
+    // const [totalFat, setTotalFat] = useState<number>(0);
+    // const [totalCarbs, setTotalCarbs] = useState<number>(0);
+    const [macros, setMacros] = useState<any> ({cals: 0, protein: 0, fat: 0, carbs: 0});
+
+    const [meals, setMeals] = useState<Array<JSX.Element>>([]);
+
+    // get initial data
+    useEffect( () => {
+      async function getDateData() {
+          try {
+              const res = await fetch('http://localhost:8080/api/dateData', {
+                  method: 'GET',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
+                  },
+              })
+              if(!res.ok) {
+                  console.log("Failed to get date data");
+                  return;
+              }
+      
+              const data = await res.json();
+              console.log(data);
+
+              // populate meals
+              let newMeals: Array<JSX.Element> = [];
+              (data[0].meals).forEach((e: any) => {
+                const food: IFood = {
+                  foodName: "Food",
+                  calories: e.cals ? e.cals : 0, 
+                  protein: e.protein ? e.protein : 0,
+                  carbs: e.carbs ? e.carbs : 0,
+                  fat: e.fat ? e.fat: 0,
+                };
+                const mealComponent = <Meal handleMacroUpdate={handleMacroUpdate} key={meals.length} mealNumber={meals.length+1} initialFoods={food}/>;
+                newMeals = [...newMeals, mealComponent];
+                setMeals(newMeals);
+              });
+              setMacros({cals: data[0].total_cals, protein: data[0].total_protein, fat: data[0].total_fat, carbs: data[0].total_carbs});
+          } catch (e) {
+              console.error(e);
+          }   
+      }
+
+      getDateData();
+    }, []);
 
     // to update the macro footer
-    const handleMacroUpdate = (calories: number, protein: number, fat: number, carbs: number) => {
-        let currentCalories = totalCalories;
-        let currentProtein = totalProtein;
-        let currentFat = totalFat;
-        let currentCarbs = totalCarbs;
+    const handleMacroUpdate = async (calories: number, protein: number, fat: number, carbs: number) => {
+        // let newCals = totalCalories + calories;
+        // let newProtein = totalProtein + protein;
+        // let newFat = totalFat + fat;
+        // let newCarbs = totalCarbs + carbs;
+        // console.log('1');
+        // console.log(totalCalories);
 
-        currentCalories += calories;
-        currentProtein += protein;
-        currentFat += fat;
-        currentCarbs += carbs;
+        // setTotalCalories((totalCalories) => totalCalories + calories);
+        // setTotalProtein((totalProtein) => totalProtein + protein);
+        // setTotalFat((totalFat) => totalFat + fat);
+        // setTotalCarbs((totalCarbs) => totalCarbs + carbs);
+        setMacros((macros: any) => {return {cals: macros.cals + calories, protein: macros.protein + protein, fat: macros.fat + fat, carbs: macros.carbs + carbs}});
+    }
 
-        setTotalCalories((totalCalories) => totalCalories + calories);
-        setTotalProtein((totalProtein) => totalProtein + protein);
-        setTotalFat((totalFat) => totalFat + fat);
-        setTotalCarbs((totalCarbs) => totalCarbs + carbs);
+    const addMeal = () => {
+      const mealComponent = <Meal handleMacroUpdate={handleMacroUpdate} key={meals.length} mealNumber={meals.length+1}/>;
+      setMeals([...meals, mealComponent]);
     }
 
     return (
         <div className="flex flex-col w-full h-full">
-            <MealsContainer handleMacroUpdate={handleMacroUpdate}/>
+            <MealsContainer meals={meals} addMeal={addMeal} handleMacroUpdate={handleMacroUpdate}/>
             <MacroFooter
-                calories={totalCalories}
-                protein={totalProtein}
-                fat={totalFat}
-                carbs={totalCarbs}
+                calories={macros.cals}
+                protein={macros.protein}
+                fat={macros.fat}
+                carbs={macros.carbs}
             />
         </div>
     );

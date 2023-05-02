@@ -102,6 +102,33 @@ app.post('/api/recipes', authenticateToken, (req, res) => __awaiter(void 0, void
         res.status(400);
     }
 }));
+// get endpoint for user's dateData (meals)
+app.get('/api/dateData', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("get dateData");
+    yield conn_1.default.updateDateDate(req.body.user.email, [{ date: new Date(), meals: [{ name: "Meal 1", cals: 100, protein: 30, carbs: 50, fat: 20 }], total_cals: 100, total_protein: 30, total_carbs: 50, total_fat: 20 }]);
+    try {
+        const user = yield conn_1.default.findUser(req.body.user.email);
+        console.log(user.dataByDate);
+        res.status(200).json(user.dataByDate);
+    }
+    catch (e) {
+        console.error(e);
+        res.status(400);
+    }
+}));
+// post endpoint to update user's dateData
+app.post('/api/recipes', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("modify recipes");
+    // console.log(req);
+    try {
+        yield conn_1.default.updateDateDate(req.body.user.email, req.body.dateData);
+        res.status(201);
+    }
+    catch (e) {
+        console.error(e);
+        res.status(400);
+    }
+}));
 // middleware to authenticate token from the client, use in routes that require user to be logged in
 function authenticateToken(req, res, next) {
     // console.log(req.body);

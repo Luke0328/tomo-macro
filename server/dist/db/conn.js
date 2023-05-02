@@ -75,7 +75,7 @@ class DbFacade {
             }
         });
     }
-    // modify recipes from user
+    // modify recipes on user
     static updateRecipes(email, recipes) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -86,6 +86,23 @@ class DbFacade {
                 });
                 yield user[0].save();
                 // console.log(user);
+            }
+            catch (e) {
+                throw e;
+            }
+        });
+    }
+    // modify dateData on user
+    static updateDateDate(email, dateData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const user = yield User_1.User.where("email").equals(email);
+                user[0].dataByDate = [];
+                dateData.forEach((dateDateItem) => {
+                    user[0].dataByDate.push(dateDateItem);
+                });
+                console.log(user);
+                yield user[0].save();
             }
             catch (e) {
                 throw e;

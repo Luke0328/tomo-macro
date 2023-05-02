@@ -382,7 +382,7 @@ const RecipeBlock:FC<IRecipeBlock> = ({ recipeName, calories, protein, carbs, fa
                 </li>
                 <li key="2">
                     <MacroRow 
-                        labelName="carbohydrates"
+                        labelName="carbs"
                         value={localCarbs}
                         isEditing={isEditing}
                         handleChange={handleCarbsChange}
