@@ -64,7 +64,7 @@ const Meal = (props: { handleMacroUpdate: (calories: number, protein: number, fa
 
     return (
         <div className="flex flex-col w-full h-full items-center">
-            <h2>Meal {props.mealNumber}</h2>
+            <h2 className="bg-orange-300 w-full flex justify-center rounded-md text-xl p-1">Meal {props.mealNumber}</h2>
             <FoodList foods={mealFoods} onDeleteFood={deleteFoodFromMeal} />
             <AddFoodButton handleMacroUpdate={props.handleMacroUpdate} addFoodToMeal={addFoodToMeal}/>
         </div>
@@ -80,6 +80,8 @@ const AddFoodButton = (
     const [showAddFoodForm, setShowAddFoodForm] = useState(false);
   
     const handleClick = () => {
+    //   const appContainer = document.querySelector('#appContainer');
+    //   appContainer?.classList.add('opacity-70');
       setShowAddFoodForm(true);
     };
   
@@ -98,6 +100,9 @@ const AddFoodButton = (
         protein: protein,
         fat: fat,
         carbs: carbs,})
+
+    //   const appContainer = document.querySelector('#appContainer');
+    //   appContainer?.classList.remove('opacity-70');
       setShowAddFoodForm(false);
     };
 
@@ -105,34 +110,30 @@ const AddFoodButton = (
     return (
       <>
         {/* <div>Add Food</div> */}
-        <button className = "border-2 border-solid border-rose-200 rounded-md p-1" onClick={handleClick}>Add Food +</button>
+        <button className = "border-2 border-solid border-rose-200 rounded-md p-1 mt-2" onClick={handleClick}>Add Food +</button>
         {showAddFoodForm && (
-          <form onSubmit={handleSubmit} id="addFoodForm" className="">
-            <label>
+          <form className="flex flex-col z-10 w-2/5 h-2/5 " onSubmit={handleSubmit} id="addFoodForm" >
+            <label className="flex justify-center w-full">
               Name:
               <input type="text" name="foodName" />
             </label>
-            <label>
+            <label className="flex justify-center w-full">
               Calories:
               <input type="number" name="calories" />
             </label>
-            <br />
-            <label>
+            <label className="flex justify-center w-full">
               Protein:
               <input type="number" name="protein" />
             </label>
-            <br />
-            <label>
+            <label className="flex justify-center w-full">
               Carbs:
               <input type="number" name="carbs" />
             </label>
-            <br />
-            <label>
+            <label className="flex justify-center w-full">
               Fat:
               <input type="number" name="fat" />
             </label>
-            <br />
-            <button type="submit" form="addFoodForm">Save food</button>
+            <button className= "border-2 border-solid border-rose-200 rounded-md p-1"type="submit" form="addFoodForm">Save food</button>
           </form>
         )}
       </>
@@ -187,7 +188,7 @@ const MealsContainer = (props: {handleMacroUpdate: (calories: number, protein: n
     // }
     
       return (
-        <div className="flex flex-col h-full w-full p-2 justify-between items-center">
+        <div className="flex flex-col h-full w-full p-2 justify-between items-center relative">
             <div className="flex flex-col overflow-auto h-full">
                 {meals.map((meal) => {
                     return <div className="h-full" key={meal.key}>{meal}</div>
