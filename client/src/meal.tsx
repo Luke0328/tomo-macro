@@ -103,9 +103,9 @@ const AddFoodButton = (
 
   
     return (
-      <div>
+      <>
         {/* <div>Add Food</div> */}
-        <button onClick={handleClick}>Add Food +</button>
+        <button className = "border-2 border-solid border-rose-200 rounded-md p-1" onClick={handleClick}>Add Food +</button>
         {showAddFoodForm && (
           <form onSubmit={handleSubmit} id="addFoodForm" className="">
             <label>
@@ -135,7 +135,7 @@ const AddFoodButton = (
             <button type="submit" form="addFoodForm">Save food</button>
           </form>
         )}
-      </div>
+      </>
     );
   };
   
@@ -165,7 +165,7 @@ const FoodList = ({ foods, onDeleteFood }: { foods: IFood[]; onDeleteFood: (inde
 // there should be a add meal button to add more meals
 const AddMealButton = (props: {addMeal: () => void}) => {
     return (
-        <button id="addMeal" className = "h-1/6"onClick = {props.addMeal}>Add Meal +</button>
+        <button id="addMeal" className = "border-2 border-solid border-rose-200 rounded-md h-10 w-1/6"onClick = {props.addMeal}>Add Meal +</button>
     )
 }
 
@@ -187,7 +187,7 @@ const MealsContainer = (props: {handleMacroUpdate: (calories: number, protein: n
     // }
     
       return (
-        <div className="flex flex-col h-full w-full p-2 justify-between">
+        <div className="flex flex-col h-full w-full p-2 justify-between items-center">
             <div className="flex flex-col overflow-auto h-full">
                 {meals.map((meal) => {
                     return <div className="h-full" key={meal.key}>{meal}</div>
