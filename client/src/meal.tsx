@@ -63,7 +63,7 @@ const Meal = (props: { handleMacroUpdate: (calories: number, protein: number, fa
     };
 
     return (
-        <div>
+        <div className="flex flex-col w-full h-full items-center">
             <h2>Meal {props.mealNumber}</h2>
             <FoodList foods={mealFoods} onDeleteFood={deleteFoodFromMeal} />
             <AddFoodButton handleMacroUpdate={props.handleMacroUpdate} addFoodToMeal={addFoodToMeal}/>
@@ -107,7 +107,7 @@ const AddFoodButton = (
         {/* <div>Add Food</div> */}
         <button onClick={handleClick}>Add Food +</button>
         {showAddFoodForm && (
-          <form onSubmit={handleSubmit} id="addFoodForm">
+          <form onSubmit={handleSubmit} id="addFoodForm" className="">
             <label>
               Name:
               <input type="text" name="foodName" />
@@ -132,7 +132,7 @@ const AddFoodButton = (
               <input type="number" name="fat" />
             </label>
             <br />
-            <button type="submit" form="addFoodForm">Add Food</button>
+            <button type="submit" form="addFoodForm">Save food</button>
           </form>
         )}
       </div>
@@ -165,7 +165,7 @@ const FoodList = ({ foods, onDeleteFood }: { foods: IFood[]; onDeleteFood: (inde
 // there should be a add meal button to add more meals
 const AddMealButton = (props: {addMeal: () => void}) => {
     return (
-        <button onClick = {props.addMeal}>Add Meal +</button>
+        <button id="addMeal" className = "h-1/6"onClick = {props.addMeal}>Add Meal +</button>
     )
 }
 
@@ -187,10 +187,12 @@ const MealsContainer = (props: {handleMacroUpdate: (calories: number, protein: n
     // }
     
       return (
-        <div className="flex flex-col h-full w-full p-2">
-            {meals.map((meal) => {
-                return <div key={meal.key}>{meal}</div>
-            })}
+        <div className="flex flex-col h-full w-full p-2 justify-between">
+            <div className="flex flex-col overflow-auto h-full">
+                {meals.map((meal) => {
+                    return <div className="h-full" key={meal.key}>{meal}</div>
+                })}
+            </div>
             <AddMealButton addMeal={addMeal} />
         </div>
       );
@@ -204,13 +206,26 @@ const MealsContainer = (props: {handleMacroUpdate: (calories: number, protein: n
 // the state should be kept here
 const MacroFooter:FC<IMacroFooter> = ({ calories, protein, fat, carbs }) => {
     return (
-        <div className="flex h-10 justify-around w-full">
-            <div>Calories: {calories}</div>
-            {/* <div className="flex"> */}
-                <div>Protein: {protein}</div>
-                <div>Fat: {fat}</div>
-                <div>Carbs: {carbs}</div>
-            {/* </div> */}
+        <div className="flex h-10 justify-around w-full mb-2">
+            
+                <div className="flex h-full justify-between w-24 items-center">
+                    <div className="bg-yellow-400 rounded-md text-white p-1">Calories </div>
+                    <span className="text-yellow-400 text-xl">{calories}</span>
+                </div>
+
+                <div className="flex h-full justify-between w-24 items-center">
+                    <div className="bg-red-400 rounded-md text-white p-1">Protein </div>
+                    <span className="text-red-400 text-xl">{protein}</span>
+                </div>
+                <div className="flex h-full justify-between w-24 items-center">
+                    <div className="bg-green-400 rounded-md text-white p-1">Fat:</div>
+                    <span className="text-green-400 text-xl">{fat}</span>
+                </div>
+
+                <div className="flex h-full justify-between w-24 items-center">
+                    <div className="bg-blue-400 rounded-md text-white p-1">Carbs:</div>
+                    <span className="text-blue-400 text-xl">{carbs}</span>
+                </div>
         </div>
     );
 }
@@ -253,6 +268,11 @@ const MealsBlockContainer = () => {
         </div>
     );
 }
+
+
+
+
+
 
 
 
